@@ -1,0 +1,4 @@
+	Command	Hikvision	IO Industries Inc
+0	ExposureNow	ExposureTime	ExposureTime
+1	ExposureMax	AutoExposureTimeUpperLimit	MaxExposure
+2	ExposureMin	AutoExposureTimeLowerLimit	MinExposure

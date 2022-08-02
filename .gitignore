@@ -1,0 +1,7 @@
+/media
+/archive
+scratch.py
+/__pycache__
+/build
+/dist
+run.spec

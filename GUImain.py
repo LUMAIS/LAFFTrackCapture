@@ -574,7 +574,8 @@ class Ui_CameraLayout(object):
             cam.out.release()
             cam.everRecorded=False
             cam.recordingStatus = 'Stopped'
-            cam.timer.pause()
+            if cam.recordingStatus != 'Paused':
+                cam.timer.pause()
         self.saveInBtn.setEnabled(True)
         self.saveInInput.setEnabled(True)
         self.nameInput.setEnabled(True)

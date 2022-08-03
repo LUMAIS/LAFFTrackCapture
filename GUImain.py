@@ -522,15 +522,16 @@ class Ui_CameraLayout(object):
     # VIDEO AND  IMAGES ACQUISITION  ------------------------
     recording=False
     def startRecording(self):
-        print('Recording starting')
+        ('Print attempting recording')
         if not self.recording:
+            print('Recording starting')
             self.recording = True
-
-            # Get video parameters
             savePath = self.saveInInput.text()
+            # Get video parameters
             if savePath =='':
                 savePath = str(Path.home())
                 self.saveInInput.setText(savePath)
+                print('Saving in: ', savePath)
             self.saveInBtn.setEnabled(False)
             self.saveInInput.setEnabled(False)
             self.videoFormatInput.setEnabled(False)
@@ -539,6 +540,7 @@ class Ui_CameraLayout(object):
             if expName == '':
                 expName = 'experiment'
                 self.nameInput.setText(expName)
+            print('Experiment name: ', expName)
             self.nameInput.setEnabled(False)
 
             format = self.videoFormatInput.currentText()
@@ -573,9 +575,9 @@ class Ui_CameraLayout(object):
             cam.recording=False
             cam.out.release()
             cam.everRecorded=False
-            cam.recordingStatus = 'Stopped'
             if cam.recordingStatus != 'Paused':
                 cam.timer.pause()
+            cam.recordingStatus = 'Stopped'
         self.saveInBtn.setEnabled(True)
         self.saveInInput.setEnabled(True)
         self.nameInput.setEnabled(True)

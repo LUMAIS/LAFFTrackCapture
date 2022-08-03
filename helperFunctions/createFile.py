@@ -8,5 +8,6 @@ def createFile(path,fileName, format):
     while file_exists:
         name = path+connection+fileName+'_'+str(n)+'.'+format
         file_exists = os.path.exists(name)
+        n=n+1
 
     return name

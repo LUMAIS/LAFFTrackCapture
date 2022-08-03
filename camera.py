@@ -123,6 +123,7 @@ class Camera(QRunnable):
             outImg = cv2.resize(img, (int(saveW), int(saveH)))
 
             if self.recording and self.fps !=0:
+                print('Recording in: ',self.cameraName)
                 self.recordVideo(outImg,saveW,saveH)
 
             if self.capturing:
@@ -168,7 +169,6 @@ class Camera(QRunnable):
             self.everRecorded=True
             self.timer  = MyTimer()
             self.timer.start()
-
         # Resize image to save
         self.out.write(img)
 

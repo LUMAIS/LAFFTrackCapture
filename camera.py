@@ -112,18 +112,26 @@ class Camera(QRunnable):
 
             
             # Image to save
+            # Resize 
+            factor = self.saveResolution/h
+            if factor>1:
+                saveW = w
+                saveH=h
+            else:
+                saveW = w*factor
+                saveH=self.saveResolution
+            outImg = cv2.resize(img, (int(saveW), int(saveH)))
+
             if self.recording and self.fps !=0:
-                self.recordVideo(img,w,h)
+                self.recordVideo(outImg,saveW,saveH)
+
             if self.capturing:
                 self.capturing=False
                 # Create file name
                 fileName=self.expName+'_'+self.cameraName
                 name = createFile(self.savePath,fileName,self.imgFormat)
-                cv2.imwrite(name, img)
+                cv2.imwrite(name, outImg)
 
-
-                
-            
             # Measure fps
             frameCount=frameCount+1
             timeNow=timer()
@@ -147,26 +155,22 @@ class Camera(QRunnable):
         print('end of camera ', self.cameraName)
 
     def recordVideo(self, img, w,h):
-        factor = self.saveResolution/h
-        recordingW = w*factor
         # Create container to record
         if not self.everRecorded:
             videoName=self.expName+'_'+self.cameraName
             name = createFile(self.savePath,videoName,self.videoOutput)
-
             if self.videoOutput =='avi':
                 fourcc='MJPG'
             else:
                 fourcc='mp4v'
             # Create video holder
-            self.out =cv2.VideoWriter(name,cv2.VideoWriter_fourcc(*fourcc),self.fps, (int(recordingW),int(self.saveResolution)))
+            self.out =cv2.VideoWriter(name,cv2.VideoWriter_fourcc(*fourcc),self.fps, (int(w),int(h)))
             self.everRecorded=True
             self.timer  = MyTimer()
             self.timer.start()
 
         # Resize image to save
-        outImg = cv2.resize(img, (int(recordingW), int(self.saveResolution)))
-        self.out.write(outImg)
+        self.out.write(img)
 
 
     def drawRect(self,img):

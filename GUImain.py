@@ -313,6 +313,14 @@ class Ui_CameraLayout(object):
             for ix,name in enumerate(camerasSelected):
                 # Get grabber from dictionary
                 grabber = camerasSelected[name]
+                # Set masters and slaves
+                if len(camerasSelected)==1:
+                    # If there is only one camera, disconnect
+                    grabber.device.set('C2CLinkConfiguration', 'Disconnected')
+                else:
+                    grabber.device.set('C2CLinkConfiguration', 'Slave')
+                    if ix+1 == len(camerasSelected):
+                        grabber.device.set('C2CLinkConfiguration', 'Master')
                 # Create worker
                 camera = Camera(grabber,name,timeKeeper)
                 timeKeeper=False
@@ -573,8 +581,9 @@ class Ui_CameraLayout(object):
         print('Recording stop')
         for cam in self.cameras:
             cam.recording=False
-            cam.out.release()
-            cam.everRecorded=False
+            if cam.everRecorded == True:
+                cam.out.release()
+                cam.everRecorded=False
             if cam.recordingStatus != 'Paused':
                 cam.timer.pause()
             cam.recordingStatus = 'Stopped'

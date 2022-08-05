@@ -1,6 +1,5 @@
 
 import sys
-print('PATH: ',sys.path)
 from GUImain import Ui_CameraLayout
 from PyQt5 import QtCore, QtGui, QtWidgets
 from debugging import debugging
@@ -9,9 +8,7 @@ from debugging import debugging
 if debugging:grabberList=None   
 else:
     from helperFunctions.createGrabbers import *
-    
     from egrabber import *
-
     # Connect to cameras (Euresys uses grabbers)
     gentl = EGenTL()
     grabberList=createGrabbers(gentl)
@@ -19,7 +16,13 @@ else:
     print('Cameras created')
     for idx,grabber in enumerate(grabberList):
         if grabber.remote is not None: # if grabber.remote is None port is empty
-            print('Camera[{}]: {} from {}'.format(idx,grabber.remote.get('DeviceModelName'),grabber.remote.get('DeviceVendorName')))
+            # set parameters
+            grabber.device.set('CxpTriggerMessageFormat', 'Pulse')
+            grabber.device.set('CameraControlMethod', 'RC')
+            device=grabber.remote.get('DeviceModelName')
+            vendor=grabber.remote.get('DeviceVendorName')
+            
+            print('Camera[{}]: {} from {}'.format(idx,device,vendor))
 
     
 # Open gui

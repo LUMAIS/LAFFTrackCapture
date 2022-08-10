@@ -589,6 +589,7 @@ class Ui_CameraLayout(object):
             self.saveInInput.setEnabled(False)
             self.videoFormatInput.setEnabled(False)
             self.fpsInput.setEnabled(False)
+            self.videoRecStartBtn.setEnabled(False)
 
             expName = self.nameInput.text()
             if expName == '':
@@ -620,6 +621,7 @@ class Ui_CameraLayout(object):
 
     def pauseRecording(self):
         print('Recording paused')
+        self.videoRecStartBtn.setEnabled(True)
         for cam in self.cameras:
             cam.recording=False
             cam.recordingStatus = 'Paused'
@@ -628,6 +630,7 @@ class Ui_CameraLayout(object):
     def stopRecording(self):
         if self.recording:
             print('Recording stop')
+            self.videoRecStartBtn.setEnabled(True)
             for cam in self.cameras:
                 cam.recording=False
                 if cam.everRecorded == True:

@@ -2,7 +2,7 @@ from ctypes import cast, POINTER, c_ubyte
 from time import sleep
 import cv2
 import numpy as np
-from PyQt5.QtCore import *
+from PyQt6.QtCore import *
 from debugging import debugging
 from helperFunctions.connect import connection
 from timeit import default_timer as timer

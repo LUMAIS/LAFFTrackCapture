@@ -106,6 +106,9 @@ class Ui_CameraLayout(object):
             self.cameraOptions.append(option)
             self.verticalLayout_3.addWidget(option)
         
+        self.formLayout.setLayout(0,QtWidgets.QFormLayout.ItemRole.FieldRole,self.verticalLayout_3)
+        self.windoSzLabel=QtWidgets.QLabel(CameraLayout)
+        self.windoSzLabel.setObjectName('windoSzLabel')
         self.formLayout.setWidget(1, QtWidgets.QFormLayout.ItemRole.LabelRole, self.windoSzLabel)
         self.horizontalLayout_5 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_5.setContentsMargins(5, -1, -1, -1)
@@ -241,8 +244,6 @@ class Ui_CameraLayout(object):
         self.cameraSelectionLabel.setText(_translate("CameraLayout", "Select camera: "))
         self.startStreamingBtn.setText(_translate("CameraLayout", "Start"))
         self.stopStreamingBtn.setText(_translate("CameraLayout", "Stop"))
-        self.cameraSelectionOpt1.setText(_translate("CameraLayout", "One camera"))
-        self.cameraSelectionOpt2.setText(_translate("CameraLayout", "Multiple camera (future)"))
         self.windoSzLabel.setText(_translate("CameraLayout", "Window size:"))
         self.windoSzSmall.setText(_translate("CameraLayout", "x 0.5"))
         self.windoSzBig.setText(_translate("CameraLayout", "x 2"))

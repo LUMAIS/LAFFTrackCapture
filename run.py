@@ -1,7 +1,7 @@
 
 import sys
 from GUImain import Ui_CameraLayout
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt6 import QtCore, QtGui, QtWidgets
 from debugging import debugging
 
 # Create grabbers
@@ -34,4 +34,4 @@ if __name__ == "__main__":
     ui = Ui_CameraLayout()
     ui.setupUi(CameraLayout,grabberList)
     CameraLayout.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

@@ -287,6 +287,7 @@ class Ui_CameraLayout(object):
         self.saveInInput.setEnabled(toggle)
         self.saveInBtn.setEnabled(toggle)
         self.fpsInput.setEnabled(toggle)
+        self.threshInput.setEnabled(toggle)
         
     # Extract camera model and vendor from grabber
     def getCameras(self):

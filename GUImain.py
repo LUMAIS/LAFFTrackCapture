@@ -565,11 +565,13 @@ class Ui_CameraLayout(object):
     # VIDEO AND  IMAGES ACQUISITION  ------------------------
 
     def updateFPS(self,fps):
-        cam =self.cameras[-1]
-        rate = 1000000/fps
-        if not debugging:
-            cam.grabber.device.set('CycleMinimumPeriod',rate)
-        print('FPS changed to ', fps)
+        if self.running:
+            cam =self.cameras[-1]
+            rate = 1000000/fps
+            if not debugging:
+                cam.grabber.device.set('CycleMinimumPeriod',rate)
+                print('Grabber set to ', rate)
+            print('FPS changed to ', fps)
         
     recording=False
     def startRecording(self):

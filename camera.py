@@ -51,7 +51,7 @@ class Camera(QRunnable):
         # Local variables
         lastTime = 0
         measuredTime = 1
-        frameCount = 0
+        allTimes = []
 
         # Open camera
         if debugging:
@@ -61,9 +61,9 @@ class Camera(QRunnable):
             self.grabber.realloc_buffers(3)
             # Start the grabber
             self.grabber.start()
+
         # Capture and display loop
         while self.running:
-
             # Get image
             if debugging:
                 ret, img = cap.read()
@@ -78,13 +78,13 @@ class Camera(QRunnable):
                     ptr = buffer.get_info(BUFFER_INFO_BASE, INFO_DATATYPE_PTR)
                     w = buffer.get_info(BUFFER_INFO_WIDTH, INFO_DATATYPE_SIZET)
                     h = buffer.get_info(BUFFER_INFO_DELIVERED_IMAGEHEIGHT, INFO_DATATYPE_SIZET)
-                    timeStamp = buffer.get_info(BUFFER_INFO_TIMESTAMP_NS, INFO_DATATYPE_UINT64)
+                    timeStamp = buffer.get_info(BUFFER_INFO_TIMESTAMP, INFO_DATATYPE_UINT64)
                     # Convert image to BGR format
                     bgr = buffer.convert('BGR8')
                     # Resize and display the image (using opencv and numpy)
                     data = cast(bgr.get_address(), POINTER(c_ubyte * bgr.get_buffer_size())).contents
                     img = np.frombuffer(data, count=bgr.get_buffer_size(), dtype=np.uint8).reshape((h,w,3))
-            
+                
             # Crop image
             img = self.cropImage(img)
             h, w, channels = img.shape
@@ -126,7 +126,6 @@ class Camera(QRunnable):
             outImg = cv2.resize(img, (int(saveW), int(saveH)))
 
             if self.recording and self.fps !=0:
-                print('Recording in: ',self.cameraName)
                 self.recordVideo(outImg,saveW,saveH,timeStamp)
 
             if self.capturing:
@@ -137,15 +136,17 @@ class Camera(QRunnable):
                 cv2.imwrite(name, outImg)
 
             # Measure fps
-            frameCount=frameCount+1
             timeNow=timer()
             timePassed= timeNow-lastTime
+            allTimes.append(timeStamp)
             if  timePassed> measuredTime:
                 # Set new time
                 lastTime=timeNow
                 # Update fps
-                self.fps = round(frameCount/timePassed,2)
-                frameCount=0
+                if len(allTimes)>2:
+                    self.fps = (len(allTimes)*1000000)/(allTimes[-1]-allTimes[0])
+                    allTimes=[]
+                
                 # Send signal
                 if self.timeKeeper:
                     self.signals.updateInfo.emit()
@@ -156,6 +157,7 @@ class Camera(QRunnable):
         if self.everRecorded:
             self.out.release()
             self.everRecorded = False
+            self.f.close()
         print('end of camera ', self.cameraName)
 
     def recordVideo(self, img, w,h, timeStamp):
@@ -173,12 +175,15 @@ class Camera(QRunnable):
             self.timer  = MyTimer()
             self.timer.start()
             # Create file with timeStamps
-            timeName='times+'+self.expName+'_'+self.cameraName
-            timeName=createFile(self.savePath,timeName,'txt')
-            self.f = open(timeName,'w')
+            timeName='times_'+self.expName+'_'+self.cameraName
+            self.timeName=createFile(self.savePath,timeName,'txt')
+            f = open(timeName,'w')
+            f.close()
                 
         # Save image in path
-        self.f.write(timeStamp)
+        f = open(self.timeName,'a')
+        f.write(str(timeStamp))
+        f.write('\n')
         self.out.write(img)
 
 

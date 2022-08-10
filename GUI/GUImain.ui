@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>441</width>
-    <height>523</height>
+    <height>551</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,66 @@
    <property name="leftMargin">
     <number>12</number>
    </property>
-   <item row="12" column="0">
+   <item row="6" column="0">
+    <widget class="QPlainTextEdit" name="notesInput">
+     <property name="placeholderText">
+      <string>Lights and camera parameters, etc</string>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout_6">
+     <item>
+      <widget class="QLabel" name="videoRecLabel">
+       <property name="text">
+        <string>Video recording:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="videoRecStartBtn">
+       <property name="text">
+        <string>Start</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="videoRecPausetBtn">
+       <property name="text">
+        <string>Pause</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="videoRecStopBtn">
+       <property name="text">
+        <string>Stop</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="videoFormatInput">
+       <property name="maximumSize">
+        <size>
+         <width>80</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <item>
+        <property name="text">
+         <string>mp4</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>avi</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="11" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout_7">
      <item>
       <widget class="QLabel" name="pictureLabel">
@@ -64,20 +123,6 @@
       </widget>
      </item>
     </layout>
-   </item>
-   <item row="6" column="0">
-    <widget class="QPlainTextEdit" name="notesInput">
-     <property name="placeholderText">
-      <string>Lights and camera parameters, etc</string>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="0">
-    <widget class="QLabel" name="notesLabel">
-     <property name="text">
-      <string>Other parameters:</string>
-     </property>
-    </widget>
    </item>
    <item row="2" column="0">
     <layout class="QFormLayout" name="formLayout">
@@ -271,56 +316,35 @@
        </item>
       </widget>
      </item>
-    </layout>
-   </item>
-   <item row="10" column="0">
-    <layout class="QHBoxLayout" name="horizontalLayout_6">
-     <item>
-      <widget class="QLabel" name="videoRecLabel">
+     <item row="4" column="0">
+      <widget class="QLabel" name="fpsLabel">
        <property name="text">
-        <string>Video recording:</string>
+        <string>FPS:</string>
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="QPushButton" name="videoRecStartBtn">
-       <property name="text">
-        <string>Start</string>
+     <item row="4" column="1">
+      <widget class="QDoubleSpinBox" name="fpsInput">
+       <property name="minimum">
+        <double>0.100000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>10.000000000000000</double>
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="QPushButton" name="videoRecPausetBtn">
+     <item row="5" column="0">
+      <widget class="QLabel" name="threshLabel">
        <property name="text">
-        <string>Pause</string>
+        <string>Show thresholds:</string>
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="QPushButton" name="videoRecStopBtn">
+     <item row="5" column="1">
+      <widget class="QPushButton" name="threshInput">
        <property name="text">
-        <string>Stop</string>
+        <string>Off</string>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QComboBox" name="videoFormatInput">
-       <property name="maximumSize">
-        <size>
-         <width>80</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <item>
-        <property name="text">
-         <string>mp4</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>avi</string>
-        </property>
-       </item>
       </widget>
      </item>
     </layout>
@@ -363,29 +387,12 @@
      </item>
     </layout>
    </item>
-   <item row="9" column="0">
-    <layout class="QHBoxLayout" name="fpsLayout">
-     <property name="topMargin">
-      <number>0</number>
+   <item row="5" column="0">
+    <widget class="QLabel" name="notesLabel">
+     <property name="text">
+      <string>Other parameters:</string>
      </property>
-     <item>
-      <widget class="QLabel" name="fpsLabel">
-       <property name="text">
-        <string>FPS:</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QDoubleSpinBox" name="fpsInput">
-       <property name="minimum">
-        <double>0.100000000000000</double>
-       </property>
-       <property name="maximum">
-        <double>10.000000000000000</double>
-       </property>
-      </widget>
-     </item>
-    </layout>
+    </widget>
    </item>
   </layout>
  </widget>

@@ -218,6 +218,7 @@ class Ui_CameraLayout(object):
         self.saveInBtn.clicked.connect(self.selectPath)
         self.pictureTakeBtn.clicked.connect(self.getImage)
         self.fpsInput.valueChanged.connect(self.updateFPS)
+        self.threshInput.clicked.connect(self.toggleThresh)
 
         # Initial set up
         self.enableAll(False)
@@ -406,6 +407,18 @@ class Ui_CameraLayout(object):
         if self.running:
             cv.imshow(*bundle)
 
+    def toggleThresh(self):
+        btn=self.threshInput.text()
+        if btn =='On':
+            self.threshInput.setText('Off')
+            thresh = False
+        else:
+            self.threshInput.setText('On')
+            thresh = True
+        # Do not send any more images
+        for cam in self.cameras:
+            cam.showThresh = thresh
+            
     dragging=False
     currentWindow = 0
     def selectWindow(self,action, x, y, flags, *userdata):

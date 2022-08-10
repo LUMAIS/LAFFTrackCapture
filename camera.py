@@ -42,6 +42,7 @@ class Camera(QRunnable):
 
         self.capturing = False # Controls when a picture is taken
         self.imgFormat = 'png' # Saves image in this format
+        self.showThresh = False # Wehater or not to threshold the image
 
         
     
@@ -96,13 +97,15 @@ class Camera(QRunnable):
             except:
                 print('Problem dimensions visualizing: ', w,h)
 
-
-            # Threshold image 
-            threshImg = self.threshold(img.copy())
-            try:
-                threshImg = cv2.resize(threshImg, (int(w * self.display_zoom), int(h * self.display_zoom)))
-            except:
-                print('Problem dimensions thresholding: ', w,h)
+            if self.showThresh:
+                # Threshold image 
+                threshImg = self.threshold(img.copy())
+                try:
+                    threshImg = cv2.resize(threshImg, (int(w * self.display_zoom), int(h * self.display_zoom)))
+                except:
+                    print('Problem dimensions thresholding: ', w,h)
+                # Send image to gui
+                self.signals.images.emit(('Thresholded '+self.cameraName,threshImg))
 
             # Emit images
             if self.capturing:
@@ -111,9 +114,6 @@ class Camera(QRunnable):
             else:
                 self.signals.images.emit((self.cameraName,disImg))
 
-            self.signals.images.emit(('Thresholded '+self.cameraName,threshImg))
-
-            
             # Image to save
             # Resize 
             factor = self.saveResolution/h

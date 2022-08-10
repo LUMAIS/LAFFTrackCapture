@@ -322,6 +322,7 @@ class Ui_CameraLayout(object):
                     if ix+1 == len(camerasSelected):
                         grabber.device.set('C2CLinkConfiguration', 'Master')
                 # Create worker
+                name = name.replace(' ', '_')
                 camera = Camera(grabber,name,timeKeeper)
                 timeKeeper=False
                 camera.signals.images.connect(self.showImg)
@@ -550,6 +551,7 @@ class Ui_CameraLayout(object):
                 self.nameInput.setText(expName)
             print('Experiment name: ', expName)
             self.nameInput.setEnabled(False)
+            expName.replace(' ','_')
 
             format = self.videoFormatInput.currentText()
 

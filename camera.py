@@ -8,6 +8,7 @@ from helperFunctions.connect import connection
 from timeit import default_timer as timer
 from helperFunctions.timer import MyTimer
 from helperFunctions.createFile import createFile
+from datetime import datetime
 
 # conditonal imports
 if not debugging:
@@ -66,6 +67,7 @@ class Camera(QRunnable):
             if debugging:
                 ret, img = cap.read()
                 sleep(1)
+                timeStamp=datetime.now()
                 if not ret:
                     print('error reading video')
                     break
@@ -75,6 +77,7 @@ class Camera(QRunnable):
                     ptr = buffer.get_info(BUFFER_INFO_BASE, INFO_DATATYPE_PTR)
                     w = buffer.get_info(BUFFER_INFO_WIDTH, INFO_DATATYPE_SIZET)
                     h = buffer.get_info(BUFFER_INFO_DELIVERED_IMAGEHEIGHT, INFO_DATATYPE_SIZET)
+                    timeStamp = buffer.get_info(BUFFER_INFO_TIMESTAMP_NS, INFO_DATATYPE_UINT64)
                     # Convert image to BGR format
                     bgr = buffer.convert('BGR8')
                     # Resize and display the image (using opencv and numpy)
@@ -124,7 +127,7 @@ class Camera(QRunnable):
 
             if self.recording and self.fps !=0:
                 print('Recording in: ',self.cameraName)
-                self.recordVideo(outImg,saveW,saveH)
+                self.recordVideo(outImg,saveW,saveH,timeStamp)
 
             if self.capturing:
                 self.capturing=False
@@ -155,7 +158,7 @@ class Camera(QRunnable):
             self.everRecorded = False
         print('end of camera ', self.cameraName)
 
-    def recordVideo(self, img, w,h):
+    def recordVideo(self, img, w,h, timeStamp):
         # Create container to record
         if not self.everRecorded:
             videoName=self.expName+'_'+self.cameraName
@@ -169,7 +172,13 @@ class Camera(QRunnable):
             self.everRecorded=True
             self.timer  = MyTimer()
             self.timer.start()
-        # Resize image to save
+            # Create file with timeStamps
+            timeName='times+'+self.expName+'_'+self.cameraName
+            timeName=createFile(self.savePath,timeName,'txt')
+            self.f = open(timeName,'w')
+                
+        # Save image in path
+        self.f.write(timeStamp)
         self.out.write(img)
 
 

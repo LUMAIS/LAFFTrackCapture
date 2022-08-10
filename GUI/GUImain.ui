@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>441</width>
-    <height>490</height>
+    <height>523</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,38 +17,7 @@
    <property name="leftMargin">
     <number>12</number>
    </property>
-   <item row="7" column="0">
-    <layout class="QHBoxLayout" name="horizontalLayout_9">
-     <property name="topMargin">
-      <number>0</number>
-     </property>
-     <item>
-      <widget class="QLabel" name="nameLabel">
-       <property name="text">
-        <string>Name:</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLineEdit" name="nameInput"/>
-     </item>
-    </layout>
-   </item>
-   <item row="5" column="0">
-    <widget class="QLabel" name="notesLabel">
-     <property name="text">
-      <string>Other parameters:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="0">
-    <widget class="QPlainTextEdit" name="notesInput">
-     <property name="placeholderText">
-      <string>Lights and camera parameters, etc</string>
-     </property>
-    </widget>
-   </item>
-   <item row="10" column="0">
+   <item row="12" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout_7">
      <item>
       <widget class="QLabel" name="pictureLabel">
@@ -95,6 +64,20 @@
       </widget>
      </item>
     </layout>
+   </item>
+   <item row="6" column="0">
+    <widget class="QPlainTextEdit" name="notesInput">
+     <property name="placeholderText">
+      <string>Lights and camera parameters, etc</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0">
+    <widget class="QLabel" name="notesLabel">
+     <property name="text">
+      <string>Other parameters:</string>
+     </property>
+    </widget>
    </item>
    <item row="2" column="0">
     <layout class="QFormLayout" name="formLayout">
@@ -290,7 +273,7 @@
      </item>
     </layout>
    </item>
-   <item row="9" column="0">
+   <item row="10" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout_6">
      <item>
       <widget class="QLabel" name="videoRecLabel">
@@ -358,6 +341,47 @@
       <widget class="QPushButton" name="saveInBtn">
        <property name="text">
         <string>Select folder</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="7" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout_9">
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QLabel" name="nameLabel">
+       <property name="text">
+        <string>Name:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="nameInput"/>
+     </item>
+    </layout>
+   </item>
+   <item row="9" column="0">
+    <layout class="QHBoxLayout" name="fpsLayout">
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QLabel" name="fpsLabel">
+       <property name="text">
+        <string>FPS:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QDoubleSpinBox" name="fpsInput">
+       <property name="minimum">
+        <double>0.100000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>10.000000000000000</double>
        </property>
       </widget>
      </item>

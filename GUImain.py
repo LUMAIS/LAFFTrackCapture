@@ -25,26 +25,10 @@ class Ui_CameraLayout(object):
         self.grabberList = grabberList
 
         CameraLayout.setObjectName("CameraLayout")
-        CameraLayout.resize(441, 400)
+        CameraLayout.resize(441, 500)
         self.gridLayout = QtWidgets.QGridLayout(CameraLayout)
         self.gridLayout.setContentsMargins(12, -1, -1, -1)
         self.gridLayout.setObjectName("gridLayout")
-        self.horizontalLayout_9 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_9.setContentsMargins(-1, 0, -1, -1)
-        self.horizontalLayout_9.setObjectName("horizontalLayout_9")
-        self.nameLabel = QtWidgets.QLabel(CameraLayout)
-        self.nameLabel.setObjectName("nameLabel")
-        self.horizontalLayout_9.addWidget(self.nameLabel)
-        self.nameInput = QtWidgets.QLineEdit(CameraLayout)
-        self.nameInput.setObjectName("nameInput")
-        self.horizontalLayout_9.addWidget(self.nameInput)
-        self.gridLayout.addLayout(self.horizontalLayout_9, 7, 0, 1, 1)
-        self.notesLabel = QtWidgets.QLabel(CameraLayout)
-        self.notesLabel.setObjectName("notesLabel")
-        self.gridLayout.addWidget(self.notesLabel, 5, 0, 1, 1)
-        self.notesInput = QtWidgets.QPlainTextEdit(CameraLayout)
-        self.notesInput.setObjectName("notesInput")
-        self.gridLayout.addWidget(self.notesInput, 6, 0, 1, 1)
         self.horizontalLayout_7 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_7.setObjectName("horizontalLayout_7")
         self.pictureLabel = QtWidgets.QLabel(CameraLayout)
@@ -61,7 +45,13 @@ class Ui_CameraLayout(object):
         self.pictureFormatsInput.addItem("")
         self.pictureFormatsInput.addItem("")
         self.horizontalLayout_7.addWidget(self.pictureFormatsInput)
-        self.gridLayout.addLayout(self.horizontalLayout_7, 10, 0, 1, 1)
+        self.gridLayout.addLayout(self.horizontalLayout_7, 12, 0, 1, 1)
+        self.notesInput = QtWidgets.QPlainTextEdit(CameraLayout)
+        self.notesInput.setObjectName("notesInput")
+        self.gridLayout.addWidget(self.notesInput, 6, 0, 1, 1)
+        self.notesLabel = QtWidgets.QLabel(CameraLayout)
+        self.notesLabel.setObjectName("notesLabel")
+        self.gridLayout.addWidget(self.notesLabel, 5, 0, 1, 1)
         self.formLayout = QtWidgets.QFormLayout()
         self.formLayout.setFieldGrowthPolicy(QtWidgets.QFormLayout.ExpandingFieldsGrow)
         self.formLayout.setLabelAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
@@ -88,8 +78,8 @@ class Ui_CameraLayout(object):
         self.verticalLayout_3 = QtWidgets.QVBoxLayout()
         self.verticalLayout_3.setContentsMargins(5, -1, -1, -1)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
-
-       # Create cameras and add to gui
+        
+        # Create cameras and add to gui
         self.cameraNames = self.getCameras()
         self.cameraOptions=[]
         for c in self.cameraNames:
@@ -174,7 +164,7 @@ class Ui_CameraLayout(object):
         self.videoFormatInput.addItem("")
         self.videoFormatInput.addItem("")
         self.horizontalLayout_6.addWidget(self.videoFormatInput)
-        self.gridLayout.addLayout(self.horizontalLayout_6, 9, 0, 1, 1)
+        self.gridLayout.addLayout(self.horizontalLayout_6, 10, 0, 1, 1)
         self.horizontalLayout_4 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
         self.saveInLabel = QtWidgets.QLabel(CameraLayout)
@@ -187,6 +177,28 @@ class Ui_CameraLayout(object):
         self.saveInBtn.setObjectName("saveInBtn")
         self.horizontalLayout_4.addWidget(self.saveInBtn)
         self.gridLayout.addLayout(self.horizontalLayout_4, 8, 0, 1, 1)
+        self.horizontalLayout_9 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_9.setContentsMargins(-1, 0, -1, -1)
+        self.horizontalLayout_9.setObjectName("horizontalLayout_9")
+        self.nameLabel = QtWidgets.QLabel(CameraLayout)
+        self.nameLabel.setObjectName("nameLabel")
+        self.horizontalLayout_9.addWidget(self.nameLabel)
+        self.nameInput = QtWidgets.QLineEdit(CameraLayout)
+        self.nameInput.setObjectName("nameInput")
+        self.horizontalLayout_9.addWidget(self.nameInput)
+        self.gridLayout.addLayout(self.horizontalLayout_9, 7, 0, 1, 1)
+        self.fpsLayout = QtWidgets.QHBoxLayout()
+        self.fpsLayout.setContentsMargins(-1, 0, -1, -1)
+        self.fpsLayout.setObjectName("fpsLayout")
+        self.fpsLabel = QtWidgets.QLabel(CameraLayout)
+        self.fpsLabel.setObjectName("fpsLabel")
+        self.fpsLayout.addWidget(self.fpsLabel)
+        self.fpsInput = QtWidgets.QDoubleSpinBox(CameraLayout)
+        self.fpsInput.setMinimum(0.1)
+        self.fpsInput.setMaximum(10.0)
+        self.fpsInput.setObjectName("fpsInput")
+        self.fpsLayout.addWidget(self.fpsInput)
+        self.gridLayout.addLayout(self.fpsLayout, 9, 0, 1, 1)
 
         # Connections
         self.startStreamingBtn.clicked.connect(self.startCameras)
@@ -203,6 +215,7 @@ class Ui_CameraLayout(object):
         self.videoRecStopBtn.clicked.connect(self.stopRecording)
         self.saveInBtn.clicked.connect(self.selectPath)
         self.pictureTakeBtn.clicked.connect(self.getImage)
+        self.fpsInput.valueChanged.connect(self.updateFPS)
 
         # Initial set up
         self.enableAll(False)
@@ -213,15 +226,14 @@ class Ui_CameraLayout(object):
     def retranslateUi(self, CameraLayout):
         _translate = QtCore.QCoreApplication.translate
         CameraLayout.setWindowTitle(_translate("CameraLayout", "Camera"))
-        self.nameLabel.setText(_translate("CameraLayout", "Name:"))
-        self.notesLabel.setText(_translate("CameraLayout", "Other parameters:"))
-        self.notesInput.setPlaceholderText(_translate("CameraLayout", "Lights and camera parameters, etc"))
         self.pictureLabel.setText(_translate("CameraLayout", "Picture: "))
         self.pictureTakeBtn.setText(_translate("CameraLayout", "Take"))
         self.pictureFormatsInput.setItemText(0, _translate("CameraLayout", "jpg"))
         self.pictureFormatsInput.setItemText(1, _translate("CameraLayout", "png"))
         self.pictureFormatsInput.setItemText(2, _translate("CameraLayout", "gif"))
         self.pictureFormatsInput.setItemText(3, _translate("CameraLayout", "tiff"))
+        self.notesInput.setPlaceholderText(_translate("CameraLayout", "Lights and camera parameters, etc"))
+        self.notesLabel.setText(_translate("CameraLayout", "Other parameters:"))
         self.cameraSelectionLabel.setText(_translate("CameraLayout", "Select camera: "))
         self.startStreamingBtn.setText(_translate("CameraLayout", "Start"))
         self.stopStreamingBtn.setText(_translate("CameraLayout", "Stop"))
@@ -245,6 +257,8 @@ class Ui_CameraLayout(object):
         self.videoFormatInput.setItemText(1, _translate("CameraLayout", "avi"))
         self.saveInLabel.setText(_translate("CameraLayout", "Save in:"))
         self.saveInBtn.setText(_translate("CameraLayout", "Select folder"))
+        self.nameLabel.setText(_translate("CameraLayout", "Name:"))
+        self.fpsLabel.setText(_translate("CameraLayout", "FPS:"))
 
 
     # Block and allow inputs
@@ -267,6 +281,7 @@ class Ui_CameraLayout(object):
         self.nameInput.setEnabled(toggle)
         self.saveInInput.setEnabled(toggle)
         self.saveInBtn.setEnabled(toggle)
+        self.fpsInput.setEnabled(toggle)
         
     # Extract camera model and vendor from grabber
     def getCameras(self):
@@ -529,6 +544,12 @@ class Ui_CameraLayout(object):
             
 
     # VIDEO AND  IMAGES ACQUISITION  ------------------------
+
+    def updateFPS(self,fps):
+        cam =self.cameras[-1]
+        rate = 1000000/fps
+        cam.grabber.device.set('CycleMinimumPeriod',rate)
+        
     recording=False
     def startRecording(self):
         ('Print attempting recording')
@@ -544,6 +565,7 @@ class Ui_CameraLayout(object):
             self.saveInBtn.setEnabled(False)
             self.saveInInput.setEnabled(False)
             self.videoFormatInput.setEnabled(False)
+            self.fpsInput.setEnabled(False)
 
             expName = self.nameInput.text()
             if expName == '':
@@ -562,6 +584,7 @@ class Ui_CameraLayout(object):
                 cam.expName=expName
                 cam.videoOutput=format
                 cam.recording=True
+
             # Save info
             notes = self.notesInput.toPlainText()
             saveCameraInfo(self.cameras,savePath,expName,'video',notes)
@@ -593,6 +616,8 @@ class Ui_CameraLayout(object):
         self.saveInInput.setEnabled(True)
         self.nameInput.setEnabled(True)
         self.videoFormatInput.setEnabled(True)
+        self.fpsInput.setEnabled(True)
+
         self.recording=False
 
     def getImage(self):

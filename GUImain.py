@@ -222,6 +222,7 @@ class Ui_CameraLayout(object):
 
         # Initial set up
         self.enableAll(False)
+        self.fpsInput.setValue(10.0)
 
         self.retranslateUi(CameraLayout)
         QtCore.QMetaObject.connectSlotsByName(CameraLayout)
@@ -418,7 +419,7 @@ class Ui_CameraLayout(object):
         # Do not send any more images
         for cam in self.cameras:
             cam.showThresh = thresh
-            
+
     dragging=False
     currentWindow = 0
     def selectWindow(self,action, x, y, flags, *userdata):
@@ -622,22 +623,23 @@ class Ui_CameraLayout(object):
             cam.timer.pause()
 
     def stopRecording(self):
-        print('Recording stop')
-        for cam in self.cameras:
-            cam.recording=False
-            if cam.everRecorded == True:
-                cam.out.release()
-                cam.everRecorded=False
-            if cam.recordingStatus != 'Paused':
-                cam.timer.pause()
-            cam.recordingStatus = 'Stopped'
-        self.saveInBtn.setEnabled(True)
-        self.saveInInput.setEnabled(True)
-        self.nameInput.setEnabled(True)
-        self.videoFormatInput.setEnabled(True)
-        self.fpsInput.setEnabled(True)
+        if self.recording:
+            print('Recording stop')
+            for cam in self.cameras:
+                cam.recording=False
+                if cam.everRecorded == True:
+                    cam.out.release()
+                    cam.everRecorded=False
+                if cam.recordingStatus != 'Paused':
+                    cam.timer.pause()
+                cam.recordingStatus = 'Stopped'
+            self.saveInBtn.setEnabled(True)
+            self.saveInInput.setEnabled(True)
+            self.nameInput.setEnabled(True)
+            self.videoFormatInput.setEnabled(True)
+            self.fpsInput.setEnabled(True)
 
-        self.recording=False
+            self.recording=False
 
     def getImage(self):
 

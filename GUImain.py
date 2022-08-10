@@ -343,6 +343,14 @@ class Ui_CameraLayout(object):
                     grabber.device.set('C2CLinkConfiguration', 'Slave')
                     if ix+1 == len(camerasSelected):
                         grabber.device.set('C2CLinkConfiguration', 'Master')
+
+                ### --- HARDCODING CAMERA CONFIGURATIONS --- ###
+                if grabber.remote.get('DeviceVendorName')=='Hikvision':
+                    grabber.remote.set('TriggerMode','On')
+                    grabber.remote.set('TriggerSource','LinkTrigger0')
+                elif grabber.remote.get('DeviceVendorName')=='IO Industries Inc':
+                    grabber.remote.set('ExposureMode','Edge_Triggered_Programmable')
+                ### --- END OF HARDCODE ---- ###
                 # Create worker
                 name = name.replace(' ', '_')
                 camera = Camera(grabber,name,timeKeeper)

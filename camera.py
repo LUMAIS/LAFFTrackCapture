@@ -177,8 +177,6 @@ class Camera(QRunnable):
             # Create file with timeStamps
             timeName='times_'+self.expName+'_'+self.cameraName
             self.timeName=createFile(self.savePath,timeName,'txt')
-            f = open(timeName,'w')
-            f.close()
                 
         # Save image in path
         f = open(self.timeName,'a')

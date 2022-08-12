@@ -48,6 +48,7 @@ class Camera(QRunnable):
     
     # Takes list of grabber from gui
     def run(self):
+        #print('Camera starting')
         # Local variables
         lastTime = 0
         measuredTime = 1
@@ -64,6 +65,7 @@ class Camera(QRunnable):
 
         # Capture and display loop
         while self.running:
+            print('running')
             # Get image
             if debugging:
                 ret, img = cap.read()
@@ -74,6 +76,7 @@ class Camera(QRunnable):
                     break
             else:
                 with Buffer(self.grabber) as buffer:
+                    print('Image obtained')
                     # Get address, width, and height of image in buffer
                     ptr = buffer.get_info(BUFFER_INFO_BASE, INFO_DATATYPE_PTR)
                     w = buffer.get_info(BUFFER_INFO_WIDTH, INFO_DATATYPE_SIZET)
@@ -150,6 +153,7 @@ class Camera(QRunnable):
                 # Send signal
                 if self.timeKeeper:
                     self.signals.updateInfo.emit()
+            print('End of while loop')
 
 
         if not debugging:

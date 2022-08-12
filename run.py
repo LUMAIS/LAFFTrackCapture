@@ -19,6 +19,7 @@ else:
             # set parameters
             grabber.device.set('CxpTriggerMessageFormat', 'Pulse')
             grabber.device.set('CameraControlMethod', 'RC')
+            grabber.device.set('C2CLinkConfiguration', 'Disconnected')
             device=grabber.remote.get('DeviceModelName')
             vendor=grabber.remote.get('DeviceVendorName')
             

@@ -334,10 +334,11 @@ class Ui_CameraLayout(object):
                 # Get grabber from dictionary
                 grabber = camerasSelected[name]
                 # Set masters and slaves
-                if len(camerasSelected)>1:
+                if len(camerasSelected)==1:
                     # If there is only one camera, disconnect
                     grabber.device.set('C2CLinkConfiguration', 'Disconnected')
                 else:
+                    print('Setting up slaves')
                     grabber.device.set('C2CLinkConfiguration', 'Slave')
                     if ix+1 == len(camerasSelected):
                         grabber.device.set('C2CLinkConfiguration', 'Master')

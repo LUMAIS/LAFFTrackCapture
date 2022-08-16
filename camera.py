@@ -161,7 +161,6 @@ class Camera(QRunnable):
         if self.everRecorded:
             self.out.release()
             self.everRecorded = False
-            self.f.close()
         print('end of camera ', self.cameraName)
 
     def recordVideo(self, img, w,h, timeStamp):

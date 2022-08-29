@@ -264,8 +264,8 @@ class Ui_CameraLayout(object):
         self.nameLabel.setText(_translate("CameraLayout", "Name:"))
         self.notesLabel.setText(_translate("CameraLayout", "Other parameters:"))
 
-
-    # Block and allow inputs
+    # Takes: boolean
+    # Void: enables and dissables part of the gui
     def enableAll(self, toggle):
         self.windoSzBig.setEnabled(toggle)
         self.windoSzSmall.setEnabled(toggle)
@@ -376,7 +376,7 @@ class Ui_CameraLayout(object):
         else:
             self.cameraError()
 
-    # Stop cameras
+    # Stop cameras stream
     def stopCameras(self):
         self.running = False
         # Disable selection
@@ -392,7 +392,8 @@ class Ui_CameraLayout(object):
         # Allow camera selection
         for c in self.cameraOptions:
             c.setEnabled(True)
-        
+
+    # Make a pop up message   
     def cameraError(self):
         msg = QtWidgets.QMessageBox()
         msg.setIcon(QtWidgets.QMessageBox.Critical)
@@ -415,6 +416,7 @@ class Ui_CameraLayout(object):
         if self.running:
             cv.imshow(*bundle)
 
+    # Connects to button in gui to enable or dissable the threshold image
     def toggleThresh(self):
         btn=self.threshInput.text()
         if btn =='On':
@@ -429,9 +431,12 @@ class Ui_CameraLayout(object):
 
     dragging=False
     currentWindow = 0
+
+    # Sets the selected window as the last one that was hovered on
     def selectWindow(self,action, x, y, flags, *userdata):
         self.currentWindow=userdata[0]
 
+    # Connects mouse action in images to output like pixel color and area selection
     def imageInteraction(self,action, x, y, flags, *userdata):
 
         index=userdata[0]
@@ -463,6 +468,7 @@ class Ui_CameraLayout(object):
                 cam.end_drag=(x,y)
             cam.hovering(x,y)
 
+    # Connects to thresholded image slider bar
     def changeThreshold(self,val,thresh):
         
         cam=self.cameras[self.currentWindow]
@@ -481,6 +487,7 @@ class Ui_CameraLayout(object):
             # Set grabber in camera's exposure
             self.selectedExpCamera.grabber.remote.set(self.exposureCommand, self.currentExpValue)
     
+    # Connects to label showing exposure value
     def changeExposureText(self):
         # Get value from line input
         val =self.exposureValue.text()
@@ -570,6 +577,7 @@ class Ui_CameraLayout(object):
 
     # VIDEO AND  IMAGES ACQUISITION  ------------------------
 
+    # Updates video fps based on exposure
     def updateFPS(self,fps):
         if self.running:
             cam =self.cameras[-1]
@@ -580,6 +588,7 @@ class Ui_CameraLayout(object):
             print('FPS changed to ', fps)
         
     recording=False
+    # Starts recording
     def startRecording(self):
         ('Print attempting recording')
         if not self.recording:
@@ -653,6 +662,7 @@ class Ui_CameraLayout(object):
 
             self.recording=False
 
+    # Takes and save picture
     def getImage(self):
 
         # Get parameters
@@ -681,6 +691,7 @@ class Ui_CameraLayout(object):
 
 
     # SHOW INFO  ------------------------
+    # Shows camera info in a window
     def visualizeInfo(self):
         if self.running:
             img =showInfo(self.cameras)

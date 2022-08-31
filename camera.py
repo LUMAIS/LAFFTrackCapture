@@ -161,6 +161,7 @@ class Camera(QRunnable):
             self.everRecorded = False
         print('end of camera ', self.cameraName)
 
+    # Uses opencv to record video into path
     def recordVideo(self, img, w,h, timeStamp):
         # Create container to record
         if not self.everRecorded:
@@ -185,7 +186,7 @@ class Camera(QRunnable):
         f.write('\n')
         self.out.write(img)
 
-
+    # Draws a rectangle in image when user is selecting area wanted
     def drawRect(self,img):
         if self.start_drag is not None:
             if self.end_drag is None:
@@ -197,6 +198,7 @@ class Camera(QRunnable):
             img = cv2.rectangle(img, start, end, (102,255,102), 8)
         return img
 
+    # Saves area selected by the user as area of interest
     def setZoom(self):
         if self.areaOfInteres is None:
             x1 = int(self.start_drag[0]/self.display_zoom)
@@ -220,15 +222,18 @@ class Camera(QRunnable):
             else:
                 self.areaOfInteres = [x1,x2,y1,y2]
         
+    # Crops image to area selected
     def cropImage(self,img):
         if self.areaOfInteres is not None:
             x1,x2,y1,y2=self.areaOfInteres
             img=img[y1:y2, x1:x2]
         return img
 
+    # Saves last mouse position on image
     def hovering(self,x,y):
         self.hoverinOn= [int(y/self.display_zoom), int(x/self.display_zoom)]
 
+    # Prints pixel color intensity on image
     def hoveringColors(self,img,h):
         if self.hoverinOn is not None:
             try:
@@ -239,6 +244,7 @@ class Camera(QRunnable):
             img=cv2.putText(img,text,(15,h),cv2.FONT_HERSHEY_SIMPLEX,3,(102,255,102),2)
         return img
             
+    # Thresholds image based on current threshold values        
     def threshold(self,img):
         img = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
         ret,lowImg = cv2.threshold(img.copy(),self.lowerThresh,255,cv2.THRESH_BINARY)

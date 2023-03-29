@@ -17,13 +17,12 @@ from egrabber import *
 
 # Create grabbers
 grabberList = None
+idx = 0
 # Connect to cameras (Euresys uses grabbers)
 try:
     gentl = EGenTL()
     grabberList=createGrabbers(gentl)
     # Check current cameras
-    camNum = len(grabberList)
-    print('{} cameras fetched from the grabber'.format(camNum))
     for idx, grabber in enumerate(grabberList):
         if grabber.remote is not None: # if grabber.remote is None port is empty
             # set parameters
@@ -37,7 +36,12 @@ try:
             print('Camera[{}]: {} from {}'.format(idx, device, vendor))
 except GenTLException as err:
     print('The grabber is not available: ' + str(err))
+    if grabberList:
+        if idx:
+            idx -= 1
+        grabberList = grabberList[:idx]
     debugging = True
+print('{} cameras are available in the grabber'.format(idx))
 
     
 # Open gui

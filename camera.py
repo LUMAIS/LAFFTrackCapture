@@ -51,8 +51,7 @@ class Camera(QRunnable):
         try:
             self.fps=min(self.fps, round(1e6/(2 * self.grabber.device.get('CycleMinimumPeriod')))) # Current fps limited to 10
         except GenTLException as err:
-            # print('ERROR: Cannot fetch grabber FPS: {}. Fallback to fps {}'.format(err, self.fps))
-            raise
+            print('ERROR: Cannot fetch grabber FPS for {}: {}. Fallback to fps {}'.format(self.cameraName, err, self.fps))
         
 
     def settings(self):
@@ -79,7 +78,7 @@ class Camera(QRunnable):
         try:
             self.grabber.device.set('CycleMinimumPeriod',rate)
         except GenTLException as err:
-            print('ERROR: failed to set grabber FPS: ' + str(err))
+            print('ERROR: failed to set grabber FPS for {}: '.format(self.cameraName) + str(err))
 
         self.exposure = st['exposure']
         self.grabber.remote.set('ExposureTime', self.exposure)

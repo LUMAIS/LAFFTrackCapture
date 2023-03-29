@@ -779,7 +779,7 @@ class Ui_CameraLayout(object):
             return
         fname = fname[0]
         print('Saving settings to: ' + fname)
-        with open(fname, 'wb') as fobj:
+        with open(fname, 'w') as fobj:
             toml.dump(self.getSetings(), fobj)
 
 
@@ -796,9 +796,17 @@ class Ui_CameraLayout(object):
             return
         fname = fname[0]
         print('Loading settings from: ' + fname)
-        with open(fname, "rb") as fobj:
+        with open(fname, "r") as fobj:
             settings = toml.load(fobj)
             self.setSettings(settings)
+        
+        # Update UI elements
+        self.exposureSelect.currentIndexChanged(self.exposureSelect.currentIndex())
+        self.resolutionSelect.currentIndexChanged(self.resolutionSelect.currentIndex())
+        # saveResolution
+        self.fpsInput.setValue(self.selectedExpCamera.fps)
+        if self.selectedExpCamera.savePath:
+            self.saveInInput.setText(self.selectedExpCamera.savePath)
 
 
     def getSetings(self):

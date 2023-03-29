@@ -6,6 +6,7 @@ from debugging import debugging
 from pathlib import Path
 from helperFunctions.showInfo import showInfo
 from helperFunctions.saveCameraInfo import saveCameraInfo
+from camera import camNum
 
 # Form implementation generated from reading ui file 'GUImain.ui'
 #
@@ -292,14 +293,15 @@ class Ui_CameraLayout(object):
     def getCameras(self):
         names = []
         if debugging:
-            for n in range(3):
-                names.append('cameraModel '+str(n) + 'vendor')
+            for n in range(camNum):
+                names.append(str(n) + '_' + 'CAM_MODEL')
         else:
-            for grabber in self.grabberList:
+            for i, grabber in enumerate(self.grabberList):
                 if grabber.remote is not None:
-                    vendor = grabber.remote.get('DeviceVendorName')
                     model = grabber.remote.get('DeviceModelName')
-                    title = model + ' from ' + vendor
+                    # vendor = grabber.remote.get('DeviceVendorName')
+                    # title =  model + ' from ' + vendor
+                    title = str(i) + '_' + model
                     names.append(title)
         return names
 
@@ -330,6 +332,7 @@ class Ui_CameraLayout(object):
             self.cameras = []
             # Initialize all cameras
             timeKeeper = True
+            initMaster = True  # Whether to initialize master
             for ix,name in enumerate(camerasSelected):
                 # Get grabber from dictionary
                 grabber = camerasSelected[name]
@@ -344,9 +347,10 @@ class Ui_CameraLayout(object):
                         grabber.device.set('C2CLinkConfiguration', 'Master')
 
                 ### --- HARDCODING CAMERA CONFIGURATIONS --- ###
-                if grabber.remote.get('DeviceVendorName')=='Hikvision':
+                if initMaster and grabber.remote.get('DeviceVendorName')=='Hikvision':
                     grabber.remote.set('TriggerMode','On')
                     grabber.remote.set('TriggerSource','LinkTrigger0')
+                    initMaster = False
                 elif grabber.remote.get('DeviceVendorName')=='IO Industries Inc':
                     grabber.remote.set('ExposureMode','Edge_Triggered_Programmable')
                 ### --- END OF HARDCODE ---- ###

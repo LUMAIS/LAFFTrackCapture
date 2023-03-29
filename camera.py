@@ -3,7 +3,7 @@ from time import sleep
 import cv2
 import numpy as np
 from PyQt6.QtCore import *
-from debugging import debugging
+from debugging import debugging, dbgVideo
 from helperFunctions.connect import connection
 from timeit import default_timer as timer
 from helperFunctions.timer import MyTimer
@@ -14,11 +14,13 @@ from datetime import datetime
 if not debugging:
     from egrabber import *
 
-class Camera(QRunnable):
+camNum = 4  # The number of cameras fetched from the grabber
+camNames = []  # Cameras fetched from the grabber
 
-    def __init__(self, grabber, name,timeKeeper):
+class Camera(QRunnable):
+    def __init__(self, grabber, name, timeKeeper):
         QObject.__init__(self)
-        self.grabber = grabber #Euresys grabber
+        self.grabber = grabber # Euresys grabber
         self.signals = CameraSignals() # Thread connection
         self.cameraName = name # Camera model and vendor
         self.running = True # Controls run function
@@ -56,10 +58,10 @@ class Camera(QRunnable):
 
         # Open camera
         if debugging:
-            cap = cv2.VideoCapture('media/randomVideo.MOV')
+            cap = cv2.VideoCapture(dbgVideo)
         else:
             # Create 3 buffers for the grabber
-            self.grabber.realloc_buffers(3)
+            self.grabber.realloc_buffers(camNum)
             # Start the grabber
             self.grabber.start()
 

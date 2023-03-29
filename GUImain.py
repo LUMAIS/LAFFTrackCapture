@@ -6,7 +6,7 @@ from debugging import debugging
 from pathlib import Path
 from helperFunctions.showInfo import showInfo
 from helperFunctions.saveCameraInfo import saveCameraInfo
-import tomli, tomli_w
+import toml
 from camera import camNum
 
 # Form implementation generated from reading ui file 'GUImain.ui'
@@ -26,7 +26,11 @@ class Ui_CameraLayout(object):
         self.settings = {}
         self.cameras = []  # Selected cameras
         self.grabberList = grabberList
-        self.cameraNames = self.getCameras()
+        if grabberList is None:
+            debugging = True
+            self.cameraNames = []
+        else:
+            self.cameraNames = self.getCameras()
 
     def setupUi(self, CameraLayout):
         CameraLayout.setObjectName("CameraLayout")
@@ -376,7 +380,13 @@ class Ui_CameraLayout(object):
                 if initMaster and grabber.remote.get('DeviceVendorName')=='Hikvision':
                     grabber.remote.set('TriggerMode','On')
                     grabber.remote.set('TriggerSource','LinkTrigger0')
-                    self.fpsInput.setValue(min(10, round(1000000/self.grabber.device.get('CycleMinimumPeriod'))))  # Current fps limited to 10
+                    self.fpsInput.setValue(10)
+                    fps = 10
+                    try: 
+                        fps = round(1e6/(2 * grabber.device.get('CycleMinimumPeriod')))
+                    except GenTLException as err:
+                        print('ERROR: failed to fetch grabber FPS: ' + str(err))
+                    self.fpsInput.setValue(min(10, fps))  # Current fps limited to 10
                     initMaster = False
                 elif grabber.remote.get('DeviceVendorName')=='IO Industries Inc':
                     grabber.remote.set('ExposureMode','Edge_Triggered_Programmable')
@@ -428,11 +438,11 @@ class Ui_CameraLayout(object):
     # Make a pop up message   
     def cameraError(self):
         msg = QtWidgets.QMessageBox()
-        msg.setIcon(QtWidgets.QMessageBox.Critical)
+        msg.setIcon(QtWidgets.QMessageBox.Icon.Critical)
         msg.setText("Camera not selected")
         msg.setInformativeText('No cameras were selected')
         msg.setWindowTitle("Camera not selected")
-        msg.exec_()
+        msg.exec()
 
     # VISUALIZATION ------------------------
     # Resize window view
@@ -616,12 +626,18 @@ class Ui_CameraLayout(object):
 
     # Updates video fps based on exposure
     def updateFPS(self, fps):
+        if fps < 1:
+            fps = 1
         if self.running:
             cam =self.cameras[-1]
-            rate = 1000000/fps
+            rate = round(1e6/(2*fps))
             if not debugging:
-                cam.grabber.device.set('CycleMinimumPeriod',rate)
-                print('Grabber set to: ', rate)
+                try: 
+                    cam.grabber.device.set('CycleMinimumPeriod',rate)  # TODO: this API call fails
+                    print('Grabber FPS set to: ', fps)
+                except GenTLException as err:
+                    print('ERROR: failed to set grabber FPS: ' + str(err))
+                    return
             print('{} FPS changed to: {}'.format(grabber.remote.get('DeviceModelName'), fps))
         
     recording=False
@@ -763,7 +779,7 @@ class Ui_CameraLayout(object):
         fname = fname[0]
         print('Saving settings to: ' + fname)
         with open(fname, 'wb') as fobj:
-            tomli_w.dump(self.getSetings(), fobj)
+            toml.dump(self.getSetings(), fobj)
 
 
     # LOAD Settings  ------------------------
@@ -780,7 +796,7 @@ class Ui_CameraLayout(object):
         fname = fname[0]
         print('Loading settings from: ' + fname)
         with open(fname, "rb") as fobj:
-            settings = tomli.load(fobj)
+            settings = toml.load(fobj)
             self.setSettings(settings)
 
 

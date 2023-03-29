@@ -23,10 +23,9 @@ pyqt6-sip = "==13.4.1"
 python-dateutil = "==2.8.2"
 pytz = "==2023.2"
 six = "==1.16.0"
-tomli = "==2.0.1"
 zipp = "==3.15.0"
 egrabber = {file = "file:///opt/euresys/egrabber/python/egrabber-18.0.0.64-py2.py3-none-any.whl"}
-tomli-w = "*"
+toml = "*"
 
 [dev-packages]
 

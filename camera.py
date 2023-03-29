@@ -20,9 +20,8 @@ camNames = []  # Cameras fetched from the grabber
 class Camera(QRunnable):
     def __init__(self, grabber, name, timeKeeper):
         QObject.__init__(self)
-        self.exposure = self.grabber.remote.get('ExposureTime')  # Camera exposure
-
         self.grabber = grabber # Euresys grabber
+        self.exposure = self.grabber.remote.get('ExposureTime')  # Camera exposure
         self.signals = CameraSignals() # Thread connection
         self.cameraName = name # Camera model and vendor
         self.running = True # Controls run function
@@ -32,7 +31,6 @@ class Camera(QRunnable):
         self.videoOutput = 'mp4' # Video format
         self.savePath=None # Path to save video
         self.expName=None # Name of the experiment to save files
-        self.fps=min(10, round(1000000/self.grabber.device.get('CycleMinimumPeriod'))) # Current fps limited to 10
         self.timeKeeper = timeKeeper # Is this camera taking care of time?
         self.recordingStatus='Null' # Shows info about recording
         self.everRecorded = False # To create a new container
@@ -47,6 +45,13 @@ class Camera(QRunnable):
         self.capturing = False # Controls when a picture is taken
         self.imgFormat = 'png' # Saves image in this format
         self.showThresh = False # Wehater or not to threshold the image
+
+        self.fps=10
+        try:
+            self.fps=min(self.fps, round(1e6/(2 * self.grabber.device.get('CycleMinimumPeriod')))) # Current fps limited to 10
+        except GenTLException as err:
+            # print('ERROR: Cannot fetch grabber FPS: {}. Fallback to fps {}'.format(err, self.fps))
+            raise
         
 
     def settings(self):
@@ -69,8 +74,11 @@ class Camera(QRunnable):
     def loadSettings(self, st):
         """Get camera settings by camera name"""
         self.fps = st['fps']
-        rate = 1000000/fps
-        self.grabber.device.set('CycleMinimumPeriod',rate)
+        rate = round(1e6/(2*self.fps))  #  setInteger<DeviceModule>("CycleMinimumPeriod", 1e6 / (2 * options.FPS));
+        try:
+            self.grabber.device.set('CycleMinimumPeriod',rate)
+        except GenTLException as err:
+            print('ERROR: failed to set grabber FPS: ' + str(err))
 
         self.exposure = st['exposure']
         self.grabber.remote.set('ExposureTime', self.exposure)

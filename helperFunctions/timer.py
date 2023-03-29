@@ -8,7 +8,7 @@ class MyTimer():
     timer.start() - should start the timer
     timer.pause() - should pause the timer
     timer.resume() - should resume the timer
-    timer.get() - should return the current time
+    timer.get() - should return the measured time
     """
 
     def __init__(self):

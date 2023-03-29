@@ -20,6 +20,8 @@ camNames = []  # Cameras fetched from the grabber
 class Camera(QRunnable):
     def __init__(self, grabber, name, timeKeeper):
         QObject.__init__(self)
+        self.exposure = self.grabber.remote.get('ExposureTime')  # Camera exposure
+
         self.grabber = grabber # Euresys grabber
         self.signals = CameraSignals() # Thread connection
         self.cameraName = name # Camera model and vendor
@@ -30,13 +32,13 @@ class Camera(QRunnable):
         self.videoOutput = 'mp4' # Video format
         self.savePath=None # Path to save video
         self.expName=None # Name of the experiment to save files
-        self.fps=0 # Current fps
+        self.fps=min(10, round(1000000/self.grabber.device.get('CycleMinimumPeriod'))) # Current fps limited to 10
         self.timeKeeper = timeKeeper # Is this camera taking care of time?
         self.recordingStatus='Null' # Shows info about recording
         self.everRecorded = False # To create a new container
         self.start_drag = None # Will be change to a point (x,y). Based on resized img
         self.end_drag=None # Point
-        self.areaOfInteres = None # List of int representing dimensions
+        self.areaOfInteres = None # List of int representing dimensions: [x1, x2, y1, y2]
         self.hoverinOn = None # Point where mouse is hovering
         self.lowerThresh = 0 # Image thresholding
         self.higherThresh=255 # Image thresholding
@@ -45,8 +47,42 @@ class Camera(QRunnable):
         self.capturing = False # Controls when a picture is taken
         self.imgFormat = 'png' # Saves image in this format
         self.showThresh = False # Wehater or not to threshold the image
-
         
+
+    def settings(self):
+        """Get camera settings by camera name"""
+        # return {'fps': self.fps, 'exposure': self.exposure, 'roi': self.areaOfInteres
+        #     , 'displaying': {'scale': self.display_zoom, 'threshold': {'low': self.lowerThresh, 'hight': self.higherThresh}}
+        #     , 'recording': {'frameHeight': self.saveResolution, 'format': self.videoOutput, 'path': self.savePath}  # timeout
+        #     }
+        st = {'fps': self.fps, 'exposure': self.exposure
+            , 'displaying': {'scale': self.display_zoom, 'threshold': {'low': self.lowerThresh, 'hight': self.higherThresh}}
+             , 'recording': {'frameHeight': self.saveResolution, 'format': self.videoOutput}
+            }
+        if self.areaOfInteres:
+            st['roi'] = self.areaOfInteres
+        if self.savePath:
+            st['recording']['path'] = self.savePath
+        return st
+
+
+    def loadSettings(self, st):
+        """Get camera settings by camera name"""
+        self.fps = st['fps']
+        rate = 1000000/fps
+        self.grabber.device.set('CycleMinimumPeriod',rate)
+
+        self.exposure = st['exposure']
+        self.grabber.remote.set('ExposureTime', self.exposure)
+
+        self.areaOfInteres = st.get('roi')
+        self.display_zoom = st['displaying']['scale']
+        self.lowerThresh = st['displaying']['threshold']['low']
+        self.higherThresh = st['displaying']['threshold']['hight']
+        self.saveResolution = st['recording']['frameHeight']
+        self.videoOutput = st['recording']['format']
+        self.savePath = st['recording'].get('path')
+    
     
     # Takes list of grabber from gui
     def run(self):

@@ -6,6 +6,7 @@ from debugging import debugging
 from pathlib import Path
 from helperFunctions.showInfo import showInfo
 from helperFunctions.saveCameraInfo import saveCameraInfo
+import tomli, tomli_w
 from camera import camNum
 
 # Form implementation generated from reading ui file 'GUImain.ui'
@@ -20,11 +21,17 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 
 
 class Ui_CameraLayout(object):
-    def setupUi(self,  CameraLayout,grabberList):
+    def __init__(self, grabberList):
+        # Init capturing settings
+        self.settings = {}
+        self.cameras = []  # Selected cameras
         self.grabberList = grabberList
+        self.cameraNames = self.getCameras()
 
+    def setupUi(self, CameraLayout):
         CameraLayout.setObjectName("CameraLayout")
         CameraLayout.resize(441, 551)
+        self.appLayout= CameraLayout
         self.gridLayout = QtWidgets.QGridLayout(CameraLayout)
         self.gridLayout.setContentsMargins(12, -1, -1, -1)
         self.gridLayout.setObjectName("gridLayout")
@@ -97,12 +104,11 @@ class Ui_CameraLayout(object):
         self.verticalLayout_3.setObjectName("verticalLayout_3")
     
         # Create cameras and add to gui
-        self.cameraNames = self.getCameras()
         self.cameraOptions=[]
         for c in self.cameraNames:
             name = c.split()
             name = name[0]
-            option = QtWidgets.QCheckBox(c,CameraLayout)
+            option = QtWidgets.QCheckBox(c, CameraLayout)
             option.setObjectName(name)
             self.cameraOptions.append(option)
             self.verticalLayout_3.addWidget(option)
@@ -111,6 +117,17 @@ class Ui_CameraLayout(object):
         self.windoSzLabel=QtWidgets.QLabel(CameraLayout)
         self.windoSzLabel.setObjectName('windoSzLabel')
         self.formLayout.setWidget(1, QtWidgets.QFormLayout.ItemRole.LabelRole, self.windoSzLabel)
+
+        self.hlSettings = QtWidgets.QHBoxLayout()
+        self.hlSettings.setObjectName("hlSettings")
+        self.btnLoadSettings = QtWidgets.QPushButton(CameraLayout)
+        self.btnLoadSettings.setObjectName("btnLoadSettings")
+        self.hlSettings.addWidget(self.btnLoadSettings)
+        self.btnSaveSettings = QtWidgets.QPushButton(CameraLayout)
+        self.btnSaveSettings.setObjectName("btnSaveSettings")
+        self.hlSettings.addWidget(self.btnSaveSettings)
+        self.gridLayout.addLayout(self.hlSettings, 0, 0, 1, 1)
+
         self.horizontalLayout_5 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_5.setContentsMargins(5, -1, -1, -1)
         self.horizontalLayout_5.setObjectName("horizontalLayout_5")
@@ -202,6 +219,8 @@ class Ui_CameraLayout(object):
         self.gridLayout.addWidget(self.notesLabel, 5, 0, 1, 1)
 
         # Connections
+        self.btnLoadSettings.clicked.connect(self.loadSettings)
+        self.btnSaveSettings.clicked.connect(self.saveSettings)
         self.startStreamingBtn.clicked.connect(self.startCameras)
         self.exposureInput.valueChanged.connect(self.changeExposureSlider)
         self.stopStreamingBtn.clicked.connect(self.stopCameras)
@@ -226,9 +245,12 @@ class Ui_CameraLayout(object):
         self.retranslateUi(CameraLayout)
         QtCore.QMetaObject.connectSlotsByName(CameraLayout)
 
+
     def retranslateUi(self, CameraLayout):
         _translate = QtCore.QCoreApplication.translate
         CameraLayout.setWindowTitle(_translate("CameraLayout", "Camera"))
+        self.btnLoadSettings.setText(_translate("CameraLayout", "Load Settings"))
+        self.btnSaveSettings.setText(_translate("CameraLayout", "Save Settings"))
         self.notesInput.setPlaceholderText(_translate("CameraLayout", "Lights and camera parameters, etc"))
         self.videoRecLabel.setText(_translate("CameraLayout", "Video recording:"))
         self.videoRecStartBtn.setText(_translate("CameraLayout", "Start"))
@@ -268,6 +290,8 @@ class Ui_CameraLayout(object):
     # Takes: boolean
     # Void: enables and dissables part of the gui
     def enableAll(self, toggle):
+        self.btnLoadSettings.setEnabled(toggle)
+        self.btnSaveSettings.setEnabled(toggle)
         self.windoSzBig.setEnabled(toggle)
         self.windoSzSmall.setEnabled(toggle)
         self.exposureSelect.setEnabled(toggle)
@@ -305,8 +329,10 @@ class Ui_CameraLayout(object):
                     names.append(title)
         return names
 
+    # Class attributes
     threadpool = QtCore.QThreadPool()
     running = False
+    
     # Checks what cameras are selected and starts streaming
     def startCameras(self):
         # Check what cameras were selected
@@ -329,9 +355,9 @@ class Ui_CameraLayout(object):
                 c.setEnabled(False)
             self.enableAll(True)
             self.startStreamingBtn.setEnabled(False)
-            self.cameras = []
+            self.cameras.clear()
             # Initialize all cameras
-            timeKeeper = True
+            timeKeeper = True  # This camera taking care of time => ? master
             initMaster = True  # Whether to initialize master
             for ix,name in enumerate(camerasSelected):
                 # Get grabber from dictionary
@@ -350,6 +376,7 @@ class Ui_CameraLayout(object):
                 if initMaster and grabber.remote.get('DeviceVendorName')=='Hikvision':
                     grabber.remote.set('TriggerMode','On')
                     grabber.remote.set('TriggerSource','LinkTrigger0')
+                    self.fpsInput.setValue(min(10, round(1000000/self.grabber.device.get('CycleMinimumPeriod'))))  # Current fps limited to 10
                     initMaster = False
                 elif grabber.remote.get('DeviceVendorName')=='IO Industries Inc':
                     grabber.remote.set('ExposureMode','Edge_Triggered_Programmable')
@@ -362,7 +389,7 @@ class Ui_CameraLayout(object):
                 camera.signals.updateInfo.connect(self.visualizeInfo)
                 self.threadpool.start(camera)
                 self.cameras.append(camera)
-                print('starting camera ', name)
+                print('Starting camera: ', name)
                 # Create options in exposure and resolution 
                 self.exposureSelect.addItem(name)
                 self.resolutionSelect.addItem(name)
@@ -370,7 +397,7 @@ class Ui_CameraLayout(object):
                 cv.namedWindow(name)
                 cv.setMouseCallback(name, self.imageInteraction,ix)
                 # Window for thresholds
-                threshName = 'Thresholded '+name
+                threshName = 'Thresholded ' + name
                 cv.namedWindow(threshName)
                 cv.setMouseCallback(threshName, self.selectWindow,ix)
                 cv.createTrackbar('Min',threshName,0,255,lambda x: self.changeThreshold(x,'min'))
@@ -412,6 +439,7 @@ class Ui_CameraLayout(object):
     def goUp(self):
         for cam in self.cameras:
             cam.display_zoom = cam.display_zoom * 2
+
     def goDown(self):
         for cam in self.cameras:
             cam.display_zoom = cam.display_zoom * 0.5
@@ -475,7 +503,6 @@ class Ui_CameraLayout(object):
 
     # Connects to thresholded image slider bar
     def changeThreshold(self,val,thresh):
-        
         cam=self.cameras[self.currentWindow]
         if thresh=='min':
             cam.lowerThresh=val
@@ -488,9 +515,10 @@ class Ui_CameraLayout(object):
     def changeExposureSlider(self,val):
         self.exposureValue.setText(str(val))
         self.currentExpValue=val
+        self.selectedExpCamera.exposure = self.currentExpValue
         if not debugging:
             # Set grabber in camera's exposure
-            self.selectedExpCamera.grabber.remote.set(self.exposureCommand, self.currentExpValue)
+            self.selectedExpCamera.grabber.remote.set(self.exposureCommand, self.selectedExpCamera.exposure)
     
     # Connects to label showing exposure value
     def changeExposureText(self):
@@ -511,12 +539,13 @@ class Ui_CameraLayout(object):
 
         # Set value to accepted value (Back to last value if input not valid)
         self.exposureValue.setText(str(self.currentExpValue))
+        self.selectedExpCamera.exposure = self.currentExpValue
         if not debugging:
             # Set grabber in camera's exposure
-            self.selectedExpCamera.grabber.remote.set(self.exposureCommand, self.currentExpValue)
+            self.selectedExpCamera.grabber.remote.set(self.exposureCommand, self.selectedExpCamera.exposure)
         
     # Sets up exposure options in gui when a camera is selected
-    def setUpExposure(self,idx):
+    def setUpExposure(self,idx,retain=True):
         # Changes to -1 when options are deleted
         print('Exposure selection changed in camera: ',idx)
         if idx != -1:
@@ -546,12 +575,15 @@ class Ui_CameraLayout(object):
                 self.minExpValue = 5
                 self.maxExpValue = 50
                 self.currentExpValue = 8
+                self.selectedExpCamera.exposure = self.currentExpValue
             else:
                 self.minExpValue = int(self.selectedExpCamera.grabber.remote.get(minCommand))
                 self.maxExpValue = int(self.selectedExpCamera.grabber.remote.get(maxCommand))
-                self.currentExpValue = int(self.selectedExpCamera.grabber.remote.get(self.exposureCommand))
+                if retain:  # Retain the device stored value
+                    self.currentExpValue = int(self.selectedExpCamera.grabber.remote.get(self.exposureCommand))
+                    self.selectedExpCamera.exposure = self.currentExpValue
                 # Set grabber in camera's exposure
-                self.selectedExpCamera.grabber.remote.set(self.exposureCommand, self.currentExpValue)
+                self.selectedExpCamera.grabber.remote.set(self.exposureCommand, self.selectedExpCamera.exposure)
             # Set slider values
             self.exposureInput.setMinimum(self.minExpValue)
             self.exposureInput.setMaximum(self.maxExpValue)
@@ -583,14 +615,14 @@ class Ui_CameraLayout(object):
     # VIDEO AND  IMAGES ACQUISITION  ------------------------
 
     # Updates video fps based on exposure
-    def updateFPS(self,fps):
+    def updateFPS(self, fps):
         if self.running:
             cam =self.cameras[-1]
             rate = 1000000/fps
             if not debugging:
                 cam.grabber.device.set('CycleMinimumPeriod',rate)
-                print('Grabber set to ', rate)
-            print('FPS changed to ', fps)
+                print('Grabber set to: ', rate)
+            print('{} FPS changed to: {}'.format(grabber.remote.get('DeviceModelName'), fps))
         
     recording=False
     # Starts recording
@@ -710,6 +742,82 @@ class Ui_CameraLayout(object):
         # Get directory
         filename = dialog.getExistingDirectory()
         self.saveInInput.setText(filename)
+
+
+    # SAVE Settings  ------------------------
+    def saveSettings(self):
+        # Save dialog box
+        
+        # dlg = QtWidgets.QFileDialog()
+        # dlg.setAcceptMode(QtWidgets.QFileDialog.AcceptMode.AcceptSave)
+        # # dlg.setFileMode(QtWidgets.QFileDialog.AnyFile)
+        # dlg.setFilter(QtCore.QDir.Filter('Capturing settings (*.toml)'))
+        # fname = dlg.getSaveFileName(self, 'Save settings file', '' # current path
+        #     , 'Capturing settings (*.toml)')
+        
+        fname = QtWidgets.QFileDialog.getSaveFileName(self.appLayout, 'Save settings file', '' # current path
+            , 'Capturing settings (*.toml)')  # "Image files (*.jpg *.gif)"; "All Files (*);;Python Files (*.py);;Text Files (*.txt)"
+
+        if not fname[0]:
+            return
+        fname = fname[0]
+        print('Saving settings to: ' + fname)
+        with open(fname, 'wb') as fobj:
+            tomli_w.dump(self.getSetings(), fobj)
+
+
+    # LOAD Settings  ------------------------
+    def loadSettings(self):
+        # Load dialog box
+        dlg = QtWidgets.QFileDialog()
+        dlg.setAcceptMode(QtWidgets.QFileDialog.AcceptMode.AcceptOpen)
+        dlg.setFileMode(QtWidgets.QFileDialog.FileMode.ExistingFile)
+        fname = QtWidgets.QFileDialog.getOpenFileName(self.appLayout, 'Load settings file', '' # current path
+            , 'Capturing settings (*.toml)')  # "Image files (*.jpg *.gif)"; "All Files (*);;Python Files (*.py);;Text Files (*.txt)"
+
+        if not fname[0]:
+            return
+        fname = fname[0]
+        print('Loading settings from: ' + fname)
+        with open(fname, "rb") as fobj:
+            settings = tomli.load(fobj)
+            self.setSettings(settings)
+
+
+    def getSetings(self):
+        """Fetch capturing settings as a dictionary for the selected cameras"""
+        if not self.cameras:
+            print('WARNING: no cameras are selected to save their settings')
+            return
+
+        # camera = Camera(grabber,name,timeKeeper)
+        # self.grabberList = grabberList
+        # self.cameraNames = self.getCameras()
+
+        # data = {'general': {'fps:': self.fpsInput.value()}, 'cameras': {cam.cameraName: cam.settings() for cam in self.cameras}}
+        data = {'cameras': {cam.cameraName: cam.settings() for cam in self.cameras}}
+        return data
+
+
+    def setSettings(self, settings):
+        """Set capturing settings from a dictionary for the selected cameras, stopping the recording"""
+        if not self.cameras:
+            print('WARNING: no cameras are selected to for the settings loading')
+            return
+
+        # Stop camera recording if any
+        self.stopRecording()
+        # if self.running:
+        # self.stopCameras()
+
+        for cam in self.cameras:
+            cs = settings['cameras'].get(cam.cameraName)
+            if cs:
+                cam.loadSettings(cs)
+                print(cam.cameraName + ' settings loaded')
+                # Update GUI values
+            else:
+                print('WARNING: ' + cam.cameraName + ' settings are not available')
 
     
 if __name__ == "__main__":

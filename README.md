@@ -1,6 +1,6 @@
 # LAFFTrackCapture
 
-Authors: (c) Andrea Chavez Munoz <chavezmunoz.a@northeastern.edu>, Artem Lutov <lav@lumais.com>  
+Authors: (c) Andrea Chavez Munoz <chavezmunoz.a@northeastern.edu>, Artem Lutov &lt;&#108;&#97;v&commat;lumais&#46;&#99;om&gt;  
 Date: 2023-03  
 
 This project is forked from https://gitlab.com/Chavezmunoz.a/anttracking/-/blob/main/Camera 

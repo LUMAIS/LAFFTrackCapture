@@ -1,13 +1,14 @@
-from numpy import record
-import pandas as pd
-from camera import Camera
+import toml
 import cv2 as cv
+import pandas as pd
+from numpy import record
+from camera import Camera
 from debugging import debugging
+from camera import camNum
 from pathlib import Path
 from helperFunctions.showInfo import showInfo
 from helperFunctions.saveCameraInfo import saveCameraInfo
-import toml
-from camera import camNum
+from egrabber import GenTLException
 
 # Form implementation generated from reading ui file 'GUImain.ui'
 #

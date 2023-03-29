@@ -1,7 +1,7 @@
-from ctypes import cast, POINTER, c_ubyte
-from time import sleep
 import cv2
 import numpy as np
+from ctypes import cast, POINTER, c_ubyte
+from time import sleep
 from PyQt6.QtCore import *
 from debugging import debugging, dbgVideo
 from helperFunctions.connect import connection
@@ -13,6 +13,7 @@ from datetime import datetime
 # conditonal imports
 if not debugging:
     from egrabber import *
+
 
 camNum = 4  # The number of cameras fetched from the grabber
 camNames = []  # Cameras fetched from the grabber

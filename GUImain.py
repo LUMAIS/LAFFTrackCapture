@@ -8,6 +8,7 @@ from pathlib import Path
 from helperFunctions.showInfo import showInfo
 from helperFunctions.saveCameraInfo import saveCameraInfo
 from egrabber import GenTLException
+from os.path import splitext
 
 # Form implementation generated from reading ui file 'GUImain.ui'
 #
@@ -772,13 +773,16 @@ class Ui_CameraLayout(object):
         # dlg.setFilter(QtCore.QDir.Filter('Capturing settings (*.toml)'))
         # fname = dlg.getSaveFileName(self, 'Save settings file', '' # current path
         #     , 'Capturing settings (*.toml)')
-        
+        fext = '.toml'
         fname = QtWidgets.QFileDialog.getSaveFileName(self.appLayout, 'Save settings file', '' # current path
-            , 'Capturing settings (*.toml)')  # "Image files (*.jpg *.gif)"; "All Files (*);;Python Files (*.py);;Text Files (*.txt)"
+            , 'Capturing settings (*{}})'.format(fext))  # "Image files (*.jpg *.gif)"; "All Files (*);;Python Files (*.py);;Text Files (*.txt)"
 
         if not fname[0]:
             return
         fname = fname[0]
+        # Ensure the correct file extension
+        if splitext(fname)[1] != fext:
+            fname += fext
         print('Saving settings to: ' + fname)
         with open(fname, 'w') as fobj:
             toml.dump(self.getSetings(), fobj)

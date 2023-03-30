@@ -22,6 +22,8 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 
 
 class Ui_CameraLayout(object):
+    setFileExt = '.toml'  # Extension of the settings file
+
     def __init__(self, grabberList):
         global debugging
         # Init capturing settings
@@ -774,16 +776,15 @@ class Ui_CameraLayout(object):
         # dlg.setFilter(QtCore.QDir.Filter('Capturing settings (*.toml)'))
         # fname = dlg.getSaveFileName(self, 'Save settings file', '' # current path
         #     , 'Capturing settings (*.toml)')
-        fext = '.toml'
         fname = QtWidgets.QFileDialog.getSaveFileName(self.appLayout, 'Save settings file', '' # current path
-            , 'Capturing settings (*{}})'.format(fext))  # "Image files (*.jpg *.gif)"; "All Files (*);;Python Files (*.py);;Text Files (*.txt)"
+            , 'Capturing settings (*{})'.format(setFileExt))  # "Image files (*.jpg *.gif)"; "All Files (*);;Python Files (*.py);;Text Files (*.txt)"
 
         if not fname[0]:
             return
         fname = fname[0]
         # Ensure the correct file extension
-        if splitext(fname)[1] != fext:
-            fname += fext
+        if splitext(fname)[1] != setFileExt:
+            fname += setFileExt
         print('Saving settings to: ' + fname)
         with open(fname, 'w') as fobj:
             toml.dump(self.getSetings(), fobj)
@@ -796,7 +797,7 @@ class Ui_CameraLayout(object):
         dlg.setAcceptMode(QtWidgets.QFileDialog.AcceptMode.AcceptOpen)
         dlg.setFileMode(QtWidgets.QFileDialog.FileMode.ExistingFile)
         fname = QtWidgets.QFileDialog.getOpenFileName(self.appLayout, 'Load settings file', '' # current path
-            , 'Capturing settings (*.toml)')  # "Image files (*.jpg *.gif)"; "All Files (*);;Python Files (*.py);;Text Files (*.txt)"
+            , 'Capturing settings (*{})'.format(setFileExt))  # "Image files (*.jpg *.gif)"; "All Files (*);;Python Files (*.py);;Text Files (*.txt)"
 
         if not fname[0]:
             return

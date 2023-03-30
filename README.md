@@ -19,3 +19,7 @@ installation of the dependencies from `requirements.txt`,
 and opening a shell in the prepared environment.
 
 Then, the application can be started as `./run.sh`.
+
+## Settings Saving/Loading
+Settings are saved/loaded only for the selected cameras considering the sequence of their plugging to the grabber.  
+Thus, a Hikvision camera settings saved from the first port of the grabber will not be loaded for that camera plugged to another port, which is essential to guarantee the deterministic camera setup and avoid issues when occasionally plugging cameras in different order, which are physically installed at the same places.

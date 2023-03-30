@@ -640,7 +640,7 @@ class Ui_CameraLayout(object):
                     except GenTLException as err:
                         print('ERROR: failed to set grabber FPS: ' + str(err))
                         return
-                print('{} FPS changed to: {}'.format(grabber.remote.get('DeviceModelName'), fps))
+                print('{} FPS changed to: {}'.format(cam.grabber.remote.get('DeviceModelName'), fps))
         
     recording=False
     # Starts recording

@@ -609,7 +609,8 @@ class Ui_CameraLayout(object):
     # Selecting camera sets resolution of current camera in dropbox
     def resolutionCameraSelected(self,idx):
         # Get resolution
-        self.selectedResCamera=self.cameras[idx]
+        if idx >= 0:
+            self.selectedResCamera=self.cameras[idx]
         res = self.selectedResCamera.saveResolution
        
         for n in range(7): # There are 7 options for resolutions. This could be changed in code if necessary
@@ -620,7 +621,7 @@ class Ui_CameraLayout(object):
     # Changing dropbox value changes camera resolution
     def changeResolution(self, txt):
         if self.running:
-            print('resolution changed',txt)
+            print('Resolution (recording frame height) changed:',txt)
             val = int(txt.split()[0])
             self.selectedResCamera.saveResolution = val
             
@@ -807,11 +808,15 @@ class Ui_CameraLayout(object):
         
         # Update UI elements
         # sigbbl = self.exposureSelect.blockSignals(True);
-        self.exposureSelect.setCurrentIndex(self.exposureSelect.currentIndex())
+        # self.exposureSelect.setCurrentIndex(self.exposureSelect.currentIndex())
         # self.exposureSelect.blockSignals(sigbbl);
-        self.resolutionSelect.setCurrentIndex(self.resolutionSelect.currentIndex())
-        # saveResolution
+        self.currentExpValue = self.selectedExpCamera.exposure
+        self.exposureValue.setText(str(self.currentExpValue))
+
+        self.resolutionCameraSelected(-1)  # Reselect current camera to update GUI values
+
         self.fpsInput.setValue(self.selectedExpCamera.fps)
+
         if self.selectedExpCamera.savePath:
             self.saveInInput.setText(self.selectedExpCamera.savePath)
 

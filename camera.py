@@ -16,6 +16,7 @@ if not debugging:
 
 
 def fpsToCyclePeriod(fps):
+    """Converts FPS to CyclePeriod and vice versa"""
     return 1e6/fps  # 1e6/(2 * fps) is originally set in artemis
 
 
@@ -79,11 +80,16 @@ class Camera(QRunnable):
         self.fps = st['fps']
         try:
             self.grabber.device.set('CycleMinimumPeriod', fpsToCyclePeriod(self.fps))
+            print('{} FPS set to: {}'.format(self.cameraName, self.fps))
         except GenTLException as err:
             print('ERROR: failed to set grabber FPS for {}: '.format(self.cameraName) + str(err))
 
         self.exposure = st['exposure']
-        self.grabber.remote.set('ExposureTime', self.exposure)
+        try:
+            self.grabber.remote.set('ExposureTime', self.exposure)
+            print('{} exposure set to: {}'.format(self.cameraName, self.exposure))
+        except GenTLException as err:
+            print('ERROR: failed to set grabber exposure for {}: '.format(self.cameraName) + str(err))
 
         self.areaOfInteres = st.get('roi')
         self.display_zoom = st['displaying']['scale']

@@ -802,8 +802,10 @@ class Ui_CameraLayout(object):
             self.setSettings(settings)
         
         # Update UI elements
-        self.exposureSelect.currentIndexChanged(self.exposureSelect.currentIndex())
-        self.resolutionSelect.currentIndexChanged(self.resolutionSelect.currentIndex())
+        # sigbbl = self.exposureSelect.blockSignals(True);
+        self.exposureSelect.setCurrentIndex(self.exposureSelect.currentIndex())
+        # self.exposureSelect.blockSignals(sigbbl);
+        self.resolutionSelect.setCurrentIndex(self.resolutionSelect.currentIndex())
         # saveResolution
         self.fpsInput.setValue(self.selectedExpCamera.fps)
         if self.selectedExpCamera.savePath:

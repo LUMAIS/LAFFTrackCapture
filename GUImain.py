@@ -812,6 +812,8 @@ class Ui_CameraLayout(object):
         # self.exposureSelect.blockSignals(sigbbl);
         self.currentExpValue = self.selectedExpCamera.exposure
         self.exposureValue.setText(str(self.currentExpValue))
+        # Set slider values
+        self.exposureInput.setValue(self.currentExpValue)
 
         self.resolutionCameraSelected(-1)  # Reselect current camera to update GUI values
 

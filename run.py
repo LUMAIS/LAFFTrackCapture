@@ -50,4 +50,7 @@ if __name__ == "__main__":
     ui = Ui_CameraLayout(grabberList)
     ui.setupUi(CameraLayout)
     CameraLayout.show()
-    sys.exit(app.exec())
+    res = app.exec()
+    # Close cameras if necessary
+    ui.stopStreamingBtn.click()
+    sys.exit(res)

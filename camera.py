@@ -15,6 +15,10 @@ if not debugging:
     from egrabber import *
 
 
+def fpsToCyclePeriod(fps):
+    return 1e6/fps  # 1e6/(2 * fps) is originally set in artemis
+
+
 camNames = []  # Cameras fetched from the grabber
 
 class Camera(QRunnable):
@@ -48,7 +52,7 @@ class Camera(QRunnable):
 
         self.fps=10
         try:
-            self.fps=min(self.fps, round(1e6/(2 * self.grabber.device.get('CycleMinimumPeriod')))) # Current fps limited to 10
+            self.fps=min(self.fps, fpsToCyclePeriod(self.grabber.device.get('CycleMinimumPeriod'))) # Current fps limited to 10
         except GenTLException as err:
             print('ERROR: Cannot fetch grabber FPS for {}: {}. Fallback to fps {}'.format(self.cameraName, err, self.fps))
         
@@ -73,9 +77,8 @@ class Camera(QRunnable):
     def loadSettings(self, st):
         """Get camera settings by camera name"""
         self.fps = st['fps']
-        rate = round(1e6/(2*self.fps))  #  setInteger<DeviceModule>("CycleMinimumPeriod", 1e6 / (2 * options.FPS));
         try:
-            self.grabber.device.set('CycleMinimumPeriod',rate)
+            self.grabber.device.set('CycleMinimumPeriod', fpsToCyclePeriod(self.fps))
         except GenTLException as err:
             print('ERROR: failed to set grabber FPS for {}: '.format(self.cameraName) + str(err))
 
@@ -103,8 +106,8 @@ class Camera(QRunnable):
         if debugging:
             cap = cv2.VideoCapture(dbgVideo)
         else:
-            # Create 3 buffers for the grabber
-            self.grabber.realloc_buffers(camNum)
+            # Create 3 buffers for the grabber as listed in the eGrabber Programmer Guide
+            self.grabber.realloc_buffers(3)
             # Start the grabber
             self.grabber.start()
 

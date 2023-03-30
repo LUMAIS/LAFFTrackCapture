@@ -7,7 +7,7 @@ This project is forked from https://gitlab.com/Chavezmunoz.a/anttracking/-/blob/
 
 ## Deployment
 Clone this repository, change directory to its root, create a virtual environment and install project dependencies from `requirements.txt`.  
-Those steps can be performed using `pipenv`:
+Those steps can be performed using `pipenv`, `pyenv`, `mambe`/`conda`, or a standard Python's `venv`:
 ```sh
 REPO_ROOT$ pip install pipenv
 REPO_ROOT$ pipenv --python 3.8

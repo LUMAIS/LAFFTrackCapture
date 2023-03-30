@@ -2,7 +2,7 @@ import toml
 import cv2 as cv
 import pandas as pd
 from numpy import record
-from camera import Camera
+from camera import Camera, fpsToCyclePeriod
 from debugging import debugging
 from pathlib import Path
 from helperFunctions.showInfo import showInfo
@@ -383,8 +383,9 @@ class Ui_CameraLayout(object):
                     grabber.remote.set('TriggerSource','LinkTrigger0')
                     self.fpsInput.setValue(10)
                     fps = 10
-                    try: 
-                        fps = round(1e6/(2 * grabber.device.get('CycleMinimumPeriod')))
+                    try:
+                        # setInteger<DeviceModule>("CycleMinimumPeriod", 1e6 / (2 * options.FPS));
+                        fps = fpsToCyclePeriod(grabber.device.get('CycleMinimumPeriod'))
                     except GenTLException as err:
                         print('ERROR: failed to fetch grabber FPS: ' + str(err))
                     self.fpsInput.setValue(min(10, fps))  # Current fps limited to 10
@@ -630,16 +631,16 @@ class Ui_CameraLayout(object):
         if fps < 1:
             fps = 1
         if self.running:
-            cam =self.cameras[-1]
-            rate = round(1e6/(2*fps))
-            if not debugging:
-                try: 
-                    cam.grabber.device.set('CycleMinimumPeriod',rate)  # TODO: this API call fails
-                    print('Grabber FPS set to: ', fps)
-                except GenTLException as err:
-                    print('ERROR: failed to set grabber FPS: ' + str(err))
-                    return
-            print('{} FPS changed to: {}'.format(grabber.remote.get('DeviceModelName'), fps))
+            # cam = self.cameras[-1]
+            for cam in self.cameras:
+                if not debugging:
+                    try: 
+                        cam.grabber.device.set('CycleMinimumPeriod', fpsToCyclePeriod(fps))  # TODO: this API call fails
+                        print('Grabber FPS set to: ', fps)
+                    except GenTLException as err:
+                        print('ERROR: failed to set grabber FPS: ' + str(err))
+                        return
+                print('{} FPS changed to: {}'.format(grabber.remote.get('DeviceModelName'), fps))
         
     recording=False
     # Starts recording

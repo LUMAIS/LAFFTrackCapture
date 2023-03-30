@@ -4,7 +4,6 @@ import pandas as pd
 from numpy import record
 from camera import Camera
 from debugging import debugging
-from camera import camNum
 from pathlib import Path
 from helperFunctions.showInfo import showInfo
 from helperFunctions.saveCameraInfo import saveCameraInfo
@@ -23,15 +22,15 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 
 class Ui_CameraLayout(object):
     def __init__(self, grabberList):
+        global debugging
         # Init capturing settings
         self.settings = {}
         self.cameras = []  # Selected cameras
         self.grabberList = grabberList
         if grabberList is None:
             debugging = True
-            self.cameraNames = []
-        else:
-            self.cameraNames = self.getCameras()
+            # self.cameraNames = []
+        self.cameraNames = self.getCameras()
 
     def setupUi(self, CameraLayout):
         CameraLayout.setObjectName("CameraLayout")
@@ -322,6 +321,7 @@ class Ui_CameraLayout(object):
     def getCameras(self):
         names = []
         if debugging:
+            camNum = 4  # The (max) number of cameras fetched from the grabber
             for n in range(camNum):
                 names.append(str(n) + '_' + 'CAM_MODEL')
         else:
@@ -362,7 +362,7 @@ class Ui_CameraLayout(object):
             self.startStreamingBtn.setEnabled(False)
             self.cameras.clear()
             # Initialize all cameras
-            timeKeeper = True  # This camera taking care of time => ? master
+            timeKeeper = True  # This camera taking care of time => ? master  TOFIX
             initMaster = True  # Whether to initialize master
             for ix,name in enumerate(camerasSelected):
                 # Get grabber from dictionary

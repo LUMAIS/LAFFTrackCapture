@@ -15,7 +15,6 @@ if not debugging:
     from egrabber import *
 
 
-camNum = 4  # The number of cameras fetched from the grabber
 camNames = []  # Cameras fetched from the grabber
 
 class Camera(QRunnable):

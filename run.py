@@ -8,10 +8,10 @@
 """
 
 import sys
+import debugging
 from GUImain import Ui_CameraLayout
 from PyQt6 import QtCore, QtGui, QtWidgets
-from debugging import debugging
-from camera import camNum, camNames
+from camera import camNames
 from helperFunctions.createGrabbers import *
 from egrabber import *
 
@@ -37,10 +37,8 @@ try:
 except GenTLException as err:
     print('The grabber is not available: ' + str(err))
     if grabberList:
-        if idx:
-            idx -= 1
-        grabberList = grabberList[:idx]
-    debugging = True
+        grabberList = grabberList[:len(camNames)]
+    debugging.debugging = True
 print('{} cameras are available in the grabber'.format(idx))
 
     

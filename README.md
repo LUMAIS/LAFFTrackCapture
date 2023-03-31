@@ -25,8 +25,9 @@ Then, the application can be started as `./run.sh`.
 The whole Python application with all modules and dependencies can be packed into a single executable file using PyInstaller or its alternatives. PyInstaller can be installed by executing `$ pip install -U pyinstaller`.  
 Then, this app with all its dependencies can be packed into a single executable file located in `./dist/` by the following command:
 ```sh
-$ pyinstaller --onefile ./run.py
+$ pyinstaller -F -n ltcap ./run.py
 ```
+See the [generation options in the PyInstaller docs](https://pyinstaller.org/en/stable/usage.html#what-to-generate).
 
 ## Settings Saving/Loading
 Settings are saved/loaded only for the selected cameras considering the sequence of their plugging to the grabber.  

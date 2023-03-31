@@ -2,6 +2,7 @@
 
 Authors: (c) Andrea Chavez Munoz <chavezmunoz.a@northeastern.edu>, Artem Lutov &lt;&#108;&#97;v&commat;lumais&#46;&#99;om&gt;  
 Date: 2023-03  
+License:  [Apache License Version 2.0](https://www.apache.org/licenses/LICENSE-2.0)  
 
 This project is forked from https://gitlab.com/Chavezmunoz.a/anttracking/-/blob/main/Camera 
 

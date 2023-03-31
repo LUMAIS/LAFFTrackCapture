@@ -24,7 +24,7 @@ camNames = []  # Cameras fetched from the grabber
 
 class Camera(QRunnable):
     def __init__(self, grabber, name, timeKeeper):
-        QObject.__init__(self)
+        super(Camera, self).__init__()
         self.grabber = grabber # Euresys grabber
         self.exposure = self.grabber.remote.get('ExposureTime')  # Camera exposure
         self.signals = CameraSignals() # Thread connection

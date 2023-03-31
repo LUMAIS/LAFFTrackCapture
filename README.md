@@ -20,6 +20,13 @@ and opening a shell in the prepared environment.
 
 Then, the application can be started as `./run.sh`.
 
+## Building a Single Executable File
+The whole Python application with all modules and dependencies can be packed into a single executable file using PyInstaller or its alternatives. PyInstaller can be installed by executing `$ pip install -U pyinstaller`.  
+Then, this app with all its dependencies can be packed into a single executable file located in `./dist/` by the following command:
+```sh
+$ pyinstaller --onefile ./run.py
+```
+
 ## Settings Saving/Loading
 Settings are saved/loaded only for the selected cameras considering the sequence of their plugging to the grabber.  
 Thus, a Hikvision camera settings saved from the first port of the grabber will not be loaded for that camera plugged to another port, which is essential to guarantee the deterministic camera setup and avoid issues when occasionally plugging cameras in different order, which are physically installed at the same places.

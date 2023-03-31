@@ -52,5 +52,5 @@ if __name__ == "__main__":
     CameraLayout.show()
     res = app.exec()
     # Close cameras if necessary
-    ui.stopStreamingBtn.click()
+    ui.stopCameras()
     sys.exit(res)

@@ -365,8 +365,8 @@ class Ui_CameraLayout(object):
             self.startStreamingBtn.setEnabled(False)
             self.cameras.clear()
             # Initialize all cameras
-            timeKeeper = True  # This camera taking care of time => ? master  TOFIX
-            initMaster = True  # Whether to initialize master
+            initMaster = True  # Whether to initialize master, which is also responsible for the FPS measurement (timeKeeper)
+            name = name.replace(' ', '_')
             for ix,name in enumerate(camerasSelected):
                 # Get grabber from dictionary
                 grabber = camerasSelected[name]
@@ -392,14 +392,14 @@ class Ui_CameraLayout(object):
                     except GenTLException as err:
                         print('ERROR: failed to fetch grabber FPS: ' + str(err))
                     self.fpsInput.setValue(min(10, fps))  # Current fps limited to 10
+                    camera = Camera(grabber, name, True)
                     initMaster = False
-                elif grabber.remote.get('DeviceVendorName')=='IO Industries Inc':
+                else:  # if grabber.remote.get('DeviceVendorName')=='IO Industries Inc':
                     grabber.remote.set('ExposureMode','Edge_Triggered_Programmable')
+                    camera = Camera(grabber, name, False)
+
                 ### --- END OF HARDCODE ---- ###
                 # Create worker
-                name = name.replace(' ', '_')
-                camera = Camera(grabber,name,timeKeeper)
-                timeKeeper=False
                 camera.signals.images.connect(self.showImg)
                 camera.signals.updateInfo.connect(self.visualizeInfo)
                 self.threadpool.start(camera)
@@ -830,11 +830,6 @@ class Ui_CameraLayout(object):
             print('WARNING: no cameras are selected to save their settings')
             return
 
-        # camera = Camera(grabber,name,timeKeeper)
-        # self.grabberList = grabberList
-        # self.cameraNames = self.getCameras()
-
-        # data = {'general': {'fps:': self.fpsInput.value()}, 'cameras': {cam.cameraName: cam.settings() for cam in self.cameras}}
         data = {'cameras': {cam.cameraName: cam.settings() for cam in self.cameras}}
         return data
 
